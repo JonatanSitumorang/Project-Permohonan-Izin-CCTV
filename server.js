@@ -9,7 +9,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -151,6 +150,7 @@ app.get('/api/stats', async (req, res) => {
 
 // Fallback to serve index.html for root path
 app.get('/', (req, res) => {
+    console.log('✅ Root route (/) hit - serving landing.html');
     res.sendFile(__dirname + '/landing.html');
 });
 
@@ -173,6 +173,7 @@ app.get('/landing.html', (req, res) => {
 
 // Fallback for any other route - serve index.html (SPA routing)
 app.get('*', (req, res) => {
+    console.log(`⚠️  Fallback route (*) hit for: ${req.path} - serving index.html`);
     res.sendFile(__dirname + '/index.html');
 });
 
