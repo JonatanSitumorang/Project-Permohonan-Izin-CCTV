@@ -141,6 +141,16 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// Fallback to serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/landing.html');
+});
+
+// Fallback for any other route - serve index.html (SPA routing)
+app.get('*', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`\n🚀 Server running at http://localhost:${PORT}`);
