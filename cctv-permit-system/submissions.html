@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Pengajuan - CCTV Permit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-verified {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .table-row-hover {
+            transition: background-color 0.2s;
+        }
+        .table-row-hover:hover {
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm -mx-4 -mt-8 mb-8 px-4 py-4 sticky top-0 z-50">
+            <div class="container mx-auto px-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i class="fas fa-camera text-white text-xl"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-900">CCTV Permit</span>
+                </div>
+                <div class="hidden md:flex gap-6">
+                    <a href="landing.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Home</a>
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Pengajuan</a>
+                    <a href="submissions.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Riwayat</a>
+                    <a href="process-flow.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Proses</a>
+                </div>
+                <a href="index.html" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="fas fa-plus"></i>
+                    <span class="hidden sm:inline">Pengajuan Baru</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-3 rounded-lg">
+                        <i class="fas fa-history text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-900">Riwayat Pengajuan</h1>
+                </div>
+                <a href="index.html" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus"></i>
+                    Pengajuan Baru
+                </a>
+            </div>
+            <p class="text-gray-600">Kelola dan pantau semua pengajuan izin CCTV Anda</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 fade-in">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Total Pengajuan</p>
+                        <p class="text-3xl font-bold text-gray-900" id="totalCount">0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="fas fa-file-alt text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 fade-in" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Menunggu Verifikasi</p>
+                        <p class="text-3xl font-bold text-yellow-600" id="pendingCount">0</p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-lg">
+                        <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 fade-in" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Terverifikasi</p>
+                        <p class="text-3xl font-bold text-blue-600" id="verifiedCount">0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="fas fa-check-circle text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 fade-in" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Disetujui</p>
+                        <p class="text-3xl font-bold text-green-600" id="approvedCount">0</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <i class="fas fa-thumbs-up text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden fade-in">
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-list"></i>
+                    Daftar Pengajuan
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">No. Referensi</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nama Pemohon</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Departemen</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Lokasi</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Tanggal</th>
+                            <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsTable">
+                        <tr class="border-b border-gray-200">
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-2 text-gray-300"></i>
+                                <p class="mt-2">Belum ada pengajuan. <a href="index.html" class="text-blue-600 hover:underline">Buat pengajuan baru</a></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="mt-8 text-center">
+            <div class="bg-blue-50 rounded-lg p-8 border-l-4 border-blue-500">
+                <i class="fas fa-info-circle text-blue-600 text-3xl mb-4"></i>
+                <h3 class="text-lg font-bold text-blue-900 mb-2">Informasi Penting</h3>
+                <p class="text-blue-800">Semua pengajuan Anda akan ditampilkan di sini. Data disimpan secara lokal di browser Anda.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-file-alt"></i>
+                    Detail Pengajuan
+                </h2>
+                <button onclick="closeDetailModal()" class="text-white hover:bg-white hover:bg-opacity-20 w-10 h-10 rounded-full flex items-center justify-center transition">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">No. Referensi</p>
+                        <p class="text-lg font-bold text-gray-900" id="detailRef"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Status</p>
+                        <p id="detailStatus" class="text-lg font-bold"></p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <p class="text-sm text-gray-600">Nama Pemohon</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailNama"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-600">Departemen</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailDepartemen"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-600">Lokasi Pemasangan</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailLokasi"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-600">Tujuan Pembukaan</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailTujuan"></p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Telepon</p>
+                        <p class="text-lg font-semibold text-gray-900" id="detailTelepon"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Email</p>
+                        <p class="text-lg font-semibold text-gray-900" id="detailEmail"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-600">Catatan Tambahan</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailCatatan"></p>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Tanggal Pengajuan</p>
+                    <p class="text-lg font-semibold text-gray-900" id="detailTimestamp"></p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                    <p class="text-sm font-semibold text-blue-900 mb-3">
+                        <i class="fas fa-hourglass-end mr-2"></i>Estimasi Tanggal Selesai
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-3 text-sm text-blue-800">
+                        <div>
+                            <p class="font-bold">Verifikasi SPV TR:</p>
+                            <p id="detailEstVerifikasi">-</p>
+                        </div>
+                        <div>
+                            <p class="font-bold">Disposisi IT:</p>
+                            <p id="detailEstDisposisi">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3">
+                <button onclick="closeDetailModal()" class="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition">
+                    Tutup
+                </button>
+                <button onclick="printDetail()" class="flex-1 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-print"></i>
+                    Cetak
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allSubmissions = [];
+
+        function loadSubmissions() {
+            // Load from API
+            fetch('/api/submissions')
+                .then(response => response.json())
+                .then(data => {
+                    allSubmissions = data.sort((a, b) => (b.timestampMs || b.id || 0) - (a.timestampMs || a.id || 0));
+                    renderSubmissions();
+                    updateStatistics();
+                })
+                .catch(error => {
+                    console.error('Error loading submissions:', error);
+                    alert('Gagal memuat data. Pastikan server berjalan di http://localhost:3000');
+                });
+        }
+
+        function getStatusInfo(status) {
+            const statusMap = {
+                'pending': { badge: 'status-pending', text: 'Menunggu Verifikasi', icon: 'fa-hourglass-half' },
+                'verified': { badge: 'status-verified', text: 'Terverifikasi SPV TR', icon: 'fa-check-circle' },
+                'approved': { badge: 'status-approved', text: 'Disetujui', icon: 'fa-thumbs-up' },
+                'rejected': { badge: 'bg-red-100 text-red-800', text: 'Ditolak', icon: 'fa-times-circle' },
+                'escalated': { badge: 'bg-orange-100 text-orange-800', text: 'Eskalasi ke OM', icon: 'fa-arrow-up' }
+            };
+            return statusMap[status] || statusMap['pending'];
+        }
+
+        function renderSubmissions() {
+            const table = document.getElementById('submissionsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (allSubmissions.length === 0) {
+                table.innerHTML = `
+                    <tr class="border-b border-gray-200">
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2 text-gray-300"></i>
+                            <p class="mt-2">Belum ada pengajuan. <a href="index.html" class="text-blue-600 hover:underline">Buat pengajuan baru</a></p>
+                        </td>
+                    </tr>
+                `;
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            table.innerHTML = allSubmissions.map((submission, index) => {
+                const status = submission.status || 'pending';
+                const statusInfo = getStatusInfo(status);
+                // Use the formatted timestamp directly
+                const displayDate = submission.timestamp || new Date(submission.timestampMs || submission.createdAt).toLocaleDateString('id-ID');
+                return `
+                    <tr class="table-row-hover border-b border-gray-200">
+                        <td class="px-6 py-4 font-mono font-bold text-blue-600">${submission.refNumber}</td>
+                        <td class="px-6 py-4 text-gray-900 font-medium">${submission.nama}</td>
+                        <td class="px-6 py-4 text-gray-700">${submission.departemen}</td>
+                        <td class="px-6 py-4 text-gray-700">${submission.lokasi.substring(0, 30)}...</td>
+                        <td class="px-6 py-4">
+                            <span class="status-badge ${statusInfo.badge}">
+                                <i class="fas ${statusInfo.icon} mr-1"></i>
+                                ${statusInfo.text}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-700 text-sm">${displayDate}</td>
+                        <td class="px-6 py-4 text-center flex gap-2 justify-center">
+                            <button onclick="openDetailModal('${submission._id}')" class="text-blue-600 hover:text-blue-800 font-bold transition" title="Lihat detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="openVerificationModal('${submission._id}')" class="text-green-600 hover:text-green-800 font-bold transition" title="Ubah status">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSubmission('${submission._id}')" class="text-red-600 hover:text-red-800 font-bold transition" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStatistics() {
+            document.getElementById('totalCount').textContent = allSubmissions.length;
+            const pending = allSubmissions.filter(s => !s.status || s.status === 'pending').length;
+            const verified = allSubmissions.filter(s => s.status === 'verified').length;
+            const approved = allSubmissions.filter(s => s.status === 'approved').length;
+            
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('verifiedCount').textContent = verified;
+            document.getElementById('approvedCount').textContent = approved;
+        }
+
+        function openDetailModal(submissionId) {
+            const submission = allSubmissions.find(s => s._id === submissionId);
+            if (!submission) return;
+            
+            document.getElementById('detailRef').textContent = submission.refNumber;
+            document.getElementById('detailNama').textContent = submission.nama;
+            document.getElementById('detailDepartemen').textContent = submission.departemen;
+            document.getElementById('detailLokasi').textContent = submission.lokasi;
+            document.getElementById('detailTujuan').textContent = submission.tujuan;
+            document.getElementById('detailTelepon').textContent = submission.telepon;
+            document.getElementById('detailEmail').textContent = submission.email || '-';
+            document.getElementById('detailCatatan').textContent = submission.catatan || '-';
+            document.getElementById('detailTimestamp').textContent = submission.timestamp || '-';
+            
+            // Display estimated dates
+            document.getElementById('detailEstVerifikasi').textContent = submission.estimatedVerifikasi || '-';
+            document.getElementById('detailEstDisposisi').textContent = submission.estimatedDisposisi || '-';
+            
+            // Display actual status from submission
+            const status = submission.status || 'pending';
+            const statusInfo = getStatusInfo(status);
+            document.getElementById('detailStatus').innerHTML = `<span class="status-badge ${statusInfo.badge}"><i class="fas ${statusInfo.icon} mr-1"></i>${statusInfo.text}</span>`;
+            
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function printDetail() {
+            const ref = document.getElementById('detailRef').textContent;
+            const nama = document.getElementById('detailNama').textContent;
+            const departemen = document.getElementById('detailDepartemen').textContent;
+            const lokasi = document.getElementById('detailLokasi').textContent;
+            const tujuan = document.getElementById('detailTujuan').textContent;
+            const telepon = document.getElementById('detailTelepon').textContent;
+            const email = document.getElementById('detailEmail').textContent;
+            const timestamp = document.getElementById('detailTimestamp').textContent;
+
+            const printWindow = window.open('', '', 'height=700,width=900');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Cetak Pengajuan ${ref}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h2 { color: #1e40af; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        td { padding: 10px; border-bottom: 1px solid #ddd; }
+                        .label { font-weight: bold; width: 200px; color: #666; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .header h1 { margin: 0; color: #1e40af; }
+                        .footer { margin-top: 30px; text-align: center; color: #999; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>CCTV Permit System</h1>
+                        <p>Sistem Pengajuan Izin Pembukaan CCTV</p>
+                    </div>
+                    <h2>Detail Pengajuan</h2>
+                    <table>
+                        <tr><td class="label">No. Referensi:</td><td>${ref}</td></tr>
+                        <tr><td class="label">Nama Pemohon:</td><td>${nama}</td></tr>
+                        <tr><td class="label">Departemen:</td><td>${departemen}</td></tr>
+                        <tr><td class="label">Lokasi Pemasangan:</td><td>${lokasi}</td></tr>
+                        <tr><td class="label">Tujuan Pemasangan:</td><td>${tujuan}</td></tr>
+                        <tr><td class="label">Telepon:</td><td>${telepon}</td></tr>
+                        <tr><td class="label">Email:</td><td>${email}</td></tr>
+                        <tr><td class="label">Tanggal Pengajuan:</td><td>${timestamp}</td></tr>
+                    </table>
+                    <div class="footer">
+                        <p>Dokumen ini dicetak pada ${new Date().toLocaleString('id-ID')}</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function deleteSubmission(index) {
+            const submission = allSubmissions[index];
+            if (confirm(`Apakah Anda yakin ingin menghapus pengajuan ${submission.refNumber}?\n\nTindakan ini tidak bisa diundur!`)) {
+                fetch(`/api/submissions/${submission._id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('✅ Pengajuan berhasil dihapus');
+                        loadSubmissions(); // Reload data
+                    } else {
+                        alert('❌ Gagal menghapus: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('❌ Error menghapus pengajuan');
+                });
+            }
+        }
+
+        // Close modal when clicking outside
+        const detailModal = document.getElementById('detailModal');
+        if (detailModal) {
+            detailModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        }
+
+        // Close confirmation modal when clicking outside
+        const confirmModal = document.getElementById('confirmationModal');
+        if (confirmModal) {
+            confirmModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cancelConfirmation();
+                }
+            });
+        }
+
+        // Verification Modal Functions
+        function openVerificationModal(submissionId) {
+            const submission = allSubmissions.find(s => s._id === submissionId);
+            if (!submission) return;
+            
+            document.getElementById('verifySubmissionId').value = submissionId;
+            document.getElementById('verifyRefNumber').textContent = submission.refNumber;
+            document.getElementById('verifyNama').textContent = submission.nama;
+            
+            const currentStatus = submission.status || 'pending';
+            document.getElementById('verifyCurrentStatus').textContent = getStatusInfo(currentStatus).text;
+            
+            // Set tombol berdasarkan status saat ini
+            updateVerificationButtons(currentStatus);
+            
+            document.getElementById('verificationModal').classList.remove('hidden');
+        }
+
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').classList.add('hidden');
+        }
+
+        function updateVerificationButtons(currentStatus) {
+            const approveBtnSection = document.getElementById('approveBtnSection');
+            const rejectBtnSection = document.getElementById('rejectBtnSection');
+            const escalateBtnSection = document.getElementById('escalateBtnSection');
+            
+            // Show/hide buttons berdasarkan status
+            if (currentStatus === 'pending') {
+                approveBtnSection.classList.remove('hidden');
+                rejectBtnSection.classList.remove('hidden');
+                escalateBtnSection.classList.remove('hidden');
+            } else if (currentStatus === 'escalated') {
+                approveBtnSection.classList.remove('hidden');
+                rejectBtnSection.classList.remove('hidden');
+                escalateBtnSection.classList.add('hidden');
+            } else {
+                approveBtnSection.classList.add('hidden');
+                rejectBtnSection.classList.add('hidden');
+                escalateBtnSection.classList.add('hidden');
+            }
+        }
+
+        // Confirmation Modal Functions
+        let pendingStatus = null;
+
+        function showConfirmation(status) {
+            pendingStatus = status;
+            
+            // Update modal dengan detail action
+            let message = '';
+            let details = '';
+            
+            if (status === 'verified') {
+                message = '✅ Terima & Verifikasi Pengajuan?';
+                details = 'Pengajuan akan diverifikasi dan dilanjutkan ke proses Disposisi IT.';
+            } else if (status === 'rejected') {
+                message = '❌ Tolak Pengajuan?';
+                details = '⚠️ Pengajuan akan ditolak dan tidak bisa diproses lebih lanjut. Pemohon perlu membuat pengajuan baru.';
+            } else if (status === 'escalated') {
+                message = '⬆️ Eskalasi ke Operational Manager?';
+                details = 'Pengajuan akan dikirim ke OM untuk keputusan lebih lanjut. OM akan review dan memutuskan approve atau reject.';
+            }
+            
+            document.getElementById('confirmMessage').innerHTML = message;
+            document.getElementById('confirmDetails').innerHTML = details;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        }
+
+        function confirmAction() {
+            if (pendingStatus) {
+                updateSubmissionStatusDirect(pendingStatus);
+                cancelConfirmation();
+            }
+        }
+
+        function cancelConfirmation() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+            pendingStatus = null;
+        }
+
+        function updateSubmissionStatusDirect(newStatus) {
+            const submissionId = document.getElementById('verifySubmissionId').value;
+            
+            const updateData = {
+                status: newStatus,
+                verifiedAt: new Date().toLocaleString('id-ID'),
+                verifiedBy: 'SPV TR'
+            };
+            
+            // Send to API
+            fetch(`/api/submissions/${submissionId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    loadSubmissions(); // Reload data
+                    closeVerificationModal();
+                    showStatusUpdateSuccess(newStatus);
+                } else {
+                    alert('❌ Gagal update status: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Error update status');
+            });
+        }
+
+        function updateSubmissionStatus(newStatus) {
+            const index = parseInt(document.getElementById('verifySubmissionIndex').value);
+            const submission = allSubmissions[index];
+            
+            const statusText = getStatusInfo(newStatus).text;
+            
+            // Konfirmasi sebelum update
+            const confirmMsg = `Apakah Anda yakin ingin mengubah status menjadi "${statusText}"?`;
+            if (!confirm(confirmMsg)) {
+                return; // Cancel jika user tidak confirm
+            }
+            
+            submission.status = newStatus;
+            submission.verifiedAt = new Date().toLocaleString('id-ID');
+            submission.verifiedBy = 'SPV TR'; // Bisa dikustomisasi
+            
+            // Save ke localStorage
+            localStorage.setItem('cctv_submissions', JSON.stringify(allSubmissions));
+            
+            // Re-render
+            renderSubmissions();
+            updateStatistics();
+            closeVerificationModal();
+            
+            // Show success message
+            showStatusUpdateSuccess(newStatus);
+        }
+
+        function showStatusUpdateSuccess(status) {
+            const statusText = getStatusInfo(status).text;
+            alert(`✅ Status berhasil diubah menjadi: ${statusText}`);
+        }
+
+        // Close verification modal when clicking outside
+        const verificationModal = document.getElementById('verificationModal');
+        if (verificationModal) {
+            verificationModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        }
+
+        // Load submissions on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Page loaded, loading submissions...');
+                loadSubmissions();
+            });
+        } else {
+            console.log('Page already loaded, loading submissions...');
+            loadSubmissions();
+        }
+    </script>
+    <div id="confirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4 flex items-center gap-3">
+                <i class="fas fa-exclamation-triangle text-white text-3xl"></i>
+                <h2 class="text-2xl font-bold text-white">Konfirmasi</h2>
+            </div>
+
+            <div class="p-6">
+                <div id="confirmMessage" class="text-lg font-semibold text-gray-900 mb-6">
+                    Apakah Anda yakin dengan tindakan ini?
+                </div>
+
+                <div id="confirmDetails" class="bg-gray-100 rounded-lg p-4 mb-6 text-sm text-gray-700">
+                    <!-- Details akan diisi oleh JavaScript -->
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="cancelConfirmation()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-times"></i>
+                        Batal
+                    </button>
+                    <button onclick="confirmAction()" id="confirmButton" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-check"></i>
+                        Ya, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal (TR Verification) -->
+    <div id="verificationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+            <div class="sticky top-0 bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-check-square"></i>
+                    Verifikasi Pengajuan - TR
+                </h2>
+                <button onclick="closeVerificationModal()" class="text-white hover:bg-white hover:bg-opacity-20 w-10 h-10 rounded-full flex items-center justify-center transition">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">No. Referensi</p>
+                        <p class="text-lg font-bold text-gray-900" id="verifyRefNumber"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Nama Pemohon</p>
+                        <p class="text-lg font-bold text-gray-900" id="verifyNama"></p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                    <p class="text-sm text-gray-600">Status Saat Ini:</p>
+                    <p class="text-lg font-bold text-blue-900" id="verifyCurrentStatus"></p>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <p class="text-sm font-bold text-gray-700 mb-4">Pilih Tindakan Verifikasi:</p>
+                    
+                    <!-- Approve Button -->
+                    <div id="approveBtnSection" class="mb-3">
+                        <button onclick="showConfirmation('verified')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i>
+                            ✅ Terima & Verifikasi
+                        </button>
+                        <p class="text-xs text-gray-600 mt-1">Pengajuan diterima dan akan diproses lebih lanjut</p>
+                    </div>
+
+                    <!-- Reject Button -->
+                    <div id="rejectBtnSection" class="mb-3">
+                        <button onclick="showConfirmation('rejected')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <i class="fas fa-times-circle"></i>
+                            ❌ Tolak Pengajuan
+                        </button>
+                        <p class="text-xs text-gray-600 mt-1">Pengajuan akan ditolak dan tidak bisa diproses</p>
+                    </div>
+
+                    <!-- Escalate Button -->
+                    <div id="escalateBtnSection" class="mb-3">
+                        <button onclick="showConfirmation('escalated')" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <i class="fas fa-arrow-up"></i>
+                            ⬆️ Eskalasi ke Operational Manager
+                        </button>
+                        <p class="text-xs text-gray-600 mt-1">Pengajuan akan dikirim ke OM untuk keputusan lebih lanjut</p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                    <p class="text-sm text-yellow-900">
+                        <strong>ℹ️ Info:</strong> Setelah verifikasi, status akan terupdate otomatis dan pemohon bisa melihat status terbaru.
+                    </p>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <button onclick="closeVerificationModal()" class="w-full bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition">
+                    Batal
+                </button>
+            </div>
+
+            <input type="hidden" id="verifySubmissionId" value="">
+        </div>
+    </div>
+
+    <script>
+        // Helper untuk status info
+        function getStatusInfo(status) {
+            const statusMap = {
+                'pending': { badge: 'status-pending', text: 'Menunggu Verifikasi', icon: 'fa-hourglass-half' },
+                'verified': { badge: 'status-verified', text: 'Terverifikasi SPV TR', icon: 'fa-check-circle' },
+                'approved': { badge: 'status-approved', text: 'Disetujui', icon: 'fa-thumbs-up' },
+                'rejected': { badge: 'bg-red-100 text-red-800', text: 'Ditolak', icon: 'fa-times-circle' },
+                'escalated': { badge: 'bg-orange-100 text-orange-800', text: 'Eskalasi ke OM', icon: 'fa-arrow-up' }
+            };
+            return statusMap[status] || statusMap['pending'];
+        }
+    </script>
+</body>
+</html>

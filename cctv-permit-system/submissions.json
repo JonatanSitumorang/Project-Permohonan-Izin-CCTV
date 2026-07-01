@@ -1,0 +1,24 @@
+[
+  {
+    "refNumber": "CCTV-2026-04783",
+    "nama": "auslesen",
+    "departemen": "TR",
+    "lokasi": "A1#20-02",
+    "tujuan": "pencegahan",
+    "telepon": "082288012667",
+    "email": "-",
+    "customDate": "2026-07-01",
+    "customTime": "14:18",
+    "timestamp": "01/07/2026 14:18:00",
+    "timestampMs": 1782890280000,
+    "estimatedVerifikasi": "03/07/2026 14:18:00",
+    "estimatedDisposisi": "06/07/2026 14:18:00",
+    "catatan": "2026-07-01",
+    "status": "verified",
+    "id": 1782890354273,
+    "createdAt": "2026-07-01T07:19:14.273Z",
+    "verifiedAt": "1/7/2026, 14.19.35",
+    "verifiedBy": "SPV TR",
+    "updatedAt": "2026-07-01T07:19:35.996Z"
+  }
+]

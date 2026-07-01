@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pengajuan Izin CCTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .step-active {
+            ring: 2px;
+            ring-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .step-completed {
+            background-color: #10b981;
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .timeline-dot {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm -mx-4 -mt-8 mb-8 px-4 py-4 sticky top-0 z-50">
+            <div class="container mx-auto px-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i class="fas fa-camera text-white text-xl"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-900">CCTV Permit</span>
+                </div>
+                <div class="hidden md:flex gap-6">
+                    <a href="landing.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Home</a>
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Pengajuan</a>
+                    <a href="submissions.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Riwayat</a>
+                    <a href="process-flow.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Proses</a>
+                </div>
+                <a href="submissions.html" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="fas fa-history"></i>
+                    <span class="hidden sm:inline">Lihat Riwayat</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <div class="bg-blue-600 p-3 rounded-lg">
+                    <i class="fas fa-camera text-white text-2xl"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-900">CCTV Permit System</h1>
+            </div>
+            <p class="text-gray-600 text-lg">Sistem Pengajuan Izin Pembukaan CCTV</p>
+        </div>
+
+        <!-- Timeline Steps -->
+        <div class="mb-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <!-- Step 1: Isi Form -->
+                <div class="flex flex-col items-center flex-1 fade-in">
+                    <div class="timeline-dot bg-blue-500 text-white mb-3" id="step1">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-center">Isi Form</h3>
+                    <p class="text-xs text-gray-600 text-center mt-1 max-w-[150px]">Data Pengajuan</p>
+                </div>
+
+                <div class="hidden md:flex items-center flex-1 text-blue-300">
+                    <div class="h-1 bg-gradient-to-r from-blue-300 to-blue-200 w-full"></div>
+                </div>
+
+                <!-- Step 2: Verifikasi TR -->
+                <div class="flex flex-col items-center flex-1 fade-in" style="animation-delay: 0.1s">
+                    <div class="timeline-dot bg-gray-300 text-gray-600 mb-3" id="step2">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-center">Verifikasi SPV TR</h3>
+                    <p class="text-xs text-gray-600 text-center mt-1 max-w-[150px]">Review Data</p>
+                </div>
+
+                <div class="hidden md:flex items-center flex-1 text-gray-300">
+                    <div class="h-1 bg-gray-200 w-full"></div>
+                </div>
+
+                <!-- Step 3: Disposisi IT -->
+                <div class="flex flex-col items-center flex-1 fade-in" style="animation-delay: 0.2s">
+                    <div class="timeline-dot bg-gray-300 text-gray-600 mb-3" id="step3">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-center">Disposisi IT</h3>
+                    <p class="text-xs text-gray-600 text-center mt-1 max-w-[150px]">Proses IT</p>
+                </div>
+
+                <div class="hidden md:flex items-center flex-1 text-gray-300">
+                    <div class="h-1 bg-gray-200 w-full"></div>
+                </div>
+
+                <!-- Step 4: Serah Video -->
+                <div class="flex flex-col items-center flex-1 fade-in" style="animation-delay: 0.3s">
+                    <div class="timeline-dot bg-gray-300 text-gray-600 mb-3" id="step4">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-center">Serah Video</h3>
+                    <p class="text-xs text-gray-600 text-center mt-1 max-w-[150px]">Penyelesaian</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Form Section -->
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-8 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-edit text-blue-600"></i>
+                            Formulir Pengajuan Izin CCTV
+                        </h2>
+                        <p class="text-gray-600 mt-2">Lengkapi informasi di bawah untuk memulai pengajuan</p>
+                    </div>
+
+                    <form id="permissionForm" class="space-y-6">
+                        <!-- Nama Pemohon -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user text-blue-600 mr-2"></i>Nama Pemohon
+                            </label>
+                            <input type="text" placeholder="Masukkan nama lengkap" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
+                        </div>
+
+                        <!-- Departemen -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-building text-blue-600 mr-2"></i>Departemen/Unit
+                            </label>
+                            <input type="text" placeholder="Masukkan departemen atau unit"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
+                        </div>
+
+                        <!-- Lokasi CCTV -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt text-blue-600 mr-2"></i>Lokasi Pemasangan CCTV
+                            </label>
+                            <textarea placeholder="Jelaskan lokasi dan area yang akan dipasang CCTV" rows="4"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
+                                required></textarea>
+                        </div>
+
+                        <!-- Tujuan Pemasangan -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-target text-blue-600 mr-2"></i>Tujuan Pembukaan CCTV
+                            </label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
+                                <option value="">Pilih tujuan Pembukaan</option>
+                                <option value="keamanan">Keamanan Gedung</option>
+                                <option value="monitoring">Monitoring Area Kerja</option>
+                                <option value="pencegahan">Pencegahan Kejahatan</option>
+                                <option value="dokumentasi">Dokumentasi Operasional</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <!-- Nomor Telepon -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-phone text-blue-600 mr-2"></i>Nomor Telepon
+                            </label>
+                            <input type="tel" placeholder="Masukkan nomor telepon"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-envelope text-blue-600 mr-2"></i>Email (Opsional)
+                            </label>
+                            <input type="email" placeholder="Masukkan email aktif (opsional)"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+
+                        <!-- Tanggal & Waktu Pengajuan -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-calendar text-blue-600 mr-2"></i>Tanggal Pengajuan
+                                </label>
+                                <input type="date" id="customDate"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-clock text-blue-600 mr-2"></i>Waktu Pengajuan
+                                </label>
+                                <input type="time" id="customTime"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <!-- Estimasi Waktu Proses -->
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                            <p class="text-sm font-semibold text-blue-900 mb-2">
+                                <i class="fas fa-hourglass-end mr-2"></i>Estimasi Waktu Proses
+                            </p>
+                            <div class="grid md:grid-cols-3 gap-3 text-sm text-blue-800">
+                                <div>
+                                    <p class="font-bold">Verifikasi SPV TR:</p>
+                                    <p id="estVerifikasi">1-2 hari kerja</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold">Disposisi IT:</p>
+                                    <p id="estDisposisi">2-3 hari kerja</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold">Total Proses:</p>
+                                    <p id="estTotal" class="text-blue-900 font-bold">3-5 hari kerja</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Catatan Tambahan -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-sticky-note text-blue-600 mr-2"></i>Catatan Tambahan (Opsional)
+                            </label>
+                            <textarea placeholder="Tambahkan catatan atau informasi penting lainnya" rows="3"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex gap-4 pt-6">
+                            <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg transform hover:scale-105 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-paper-plane"></i>
+                                Kirim Pengajuan
+                            </button>
+                            <button type="reset" class="flex-1 bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-redo"></i>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar - Process Info -->
+            <div class="space-y-6">
+                <!-- Current Status Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 fade-in" style="animation-delay: 0.2s">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-blue-600"></i>
+                        Status Pengajuan
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                            <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+                            <span class="text-sm text-gray-700">Menunggu pengisian form</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Info Card -->
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg p-6 border-l-4 border-orange-500 fade-in" style="animation-delay: 0.3s">
+                    <h3 class="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Butuh Keputusan Manajemen?
+                    </h3>
+                    <p class="text-sm text-orange-800 mb-4">
+                        Jika diperlukan eskalasi atau keputusan dari Operational Manager, sistem akan mengarahkan ke proses persetujuan tambahan.
+                    </p>
+                    <div class="bg-white bg-opacity-70 rounded p-3 text-xs text-orange-900">
+                        <strong>Perhatian:</strong> Pastikan semua data yang diisi sudah benar dan lengkap sebelum mengirim.
+                    </div>
+                </div>
+
+                <!-- Quick Info Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 fade-in" style="animation-delay: 0.4s">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-yellow-500"></i>
+                        Tips
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span>Isi semua data dengan jelas dan akurat</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span>Sertakan lokasi yang spesifik</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span>Hubungi IT jika ada pertanyaan</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all scale-100 fade-in">
+                <div class="flex justify-center mb-4">
+                    <div class="bg-green-100 rounded-full p-4">
+                        <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-center text-gray-900 mb-2">Pengajuan Berhasil!</h2>
+                <p class="text-center text-gray-600 mb-6">
+                    Pengajuan Anda telah diterima dan sedang dalam tahap verifikasi. SPV TR akan menghubungi Anda dalam waktu 1x24 jam.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-6">
+                    <p class="text-sm text-blue-900">
+                        <strong>No. Referensi:</strong> <span id="refNumber" class="font-mono"></span>
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.location.href='submissions.html'" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-list"></i>
+                        Lihat Riwayat
+                    </button>
+                    <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        Pengajuan Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default date and time to today
+        function setDefaultDateTime() {
+            const today = new Date();
+            const dateInput = document.getElementById('customDate');
+            const timeInput = document.getElementById('customTime');
+            
+            // Format untuk date input (YYYY-MM-DD)
+            dateInput.value = today.toISOString().split('T')[0];
+            
+            // Format untuk time input (HH:MM)
+            timeInput.value = String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDateTime();
+        });
+
+        // Form submission
+        document.getElementById('permissionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Generate reference number
+            const refNumber = 'CCTV-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 10000)).padStart(5, '0');
+            
+            // Get custom date and time
+            const customDateStr = document.getElementById('customDate').value;
+            const customTimeStr = document.getElementById('customTime').value;
+            
+            if (!customDateStr || !customTimeStr) {
+                alert('❌ Silakan isi tanggal dan waktu pengajuan');
+                return;
+            }
+            
+            // Parse custom date and time
+            const [year, month, day] = customDateStr.split('-');
+            const [hours, minutes] = customTimeStr.split(':');
+            const customDate = new Date(year, month - 1, day, hours, minutes, 0);
+            
+            // Format tanggal untuk display (DD/MM/YYYY HH:MM:SS)
+            const displayDay = String(customDate.getDate()).padStart(2, '0');
+            const displayMonth = String(customDate.getMonth() + 1).padStart(2, '0');
+            const displayYear = customDate.getFullYear();
+            const displayHours = String(customDate.getHours()).padStart(2, '0');
+            const displayMinutes = String(customDate.getMinutes()).padStart(2, '0');
+            const formattedDate = `${displayDay}/${displayMonth}/${displayYear} ${displayHours}:${displayMinutes}:00`;
+            
+            // Calculate estimated completion dates
+            const estimatedVerifikasi = new Date(customDate.getTime() + 2 * 24 * 60 * 60 * 1000); // +2 hari
+            const estimatedDisposisi = new Date(customDate.getTime() + 5 * 24 * 60 * 60 * 1000); // +5 hari (termasuk verifikasi)
+            
+            // Prepare form data
+            const formData = {
+                refNumber: refNumber,
+                nama: this.elements[0].value,
+                departemen: this.elements[1].value,
+                lokasi: this.elements[2].value,
+                tujuan: this.elements[3].value,
+                telepon: this.elements[4].value,
+                email: this.elements[5].value || '-',
+                customDate: customDateStr,
+                customTime: customTimeStr,
+                timestamp: formattedDate,
+                timestampMs: customDate.getTime(),
+                estimatedVerifikasi: formatDateForDisplay(estimatedVerifikasi),
+                estimatedDisposisi: formatDateForDisplay(estimatedDisposisi),
+                catatan: this.elements[6].value,
+                status: 'pending'
+            };
+            
+            // Send to API
+            fetch('/api/submissions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Show success modal
+                    document.getElementById('refNumber').textContent = refNumber;
+                    document.getElementById('successModal').classList.remove('hidden');
+                    
+                    // Reset form
+                    document.getElementById('permissionForm').reset();
+                    setDefaultDateTime();
+                    
+                    // Scroll to modal
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Gagal mengirim pengajuan. Pastikan server berjalan di http://localhost:3000');
+            });
+        });
+
+        function formatDateForDisplay(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}:00`;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

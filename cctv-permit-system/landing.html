@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Permit System - Solusi Manajemen Izin CCTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .feature-card-hover {
+            @apply transition transform hover:scale-105 hover:shadow-2xl;
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-lg">
+                    <i class="fas fa-camera text-white text-xl"></i>
+                </div>
+                <span class="font-bold text-xl text-gray-900">CCTV Permit</span>
+            </div>
+            <div class="hidden md:flex gap-6">
+                <a href="landing.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Home</a>
+                <a href="index.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Pengajuan</a>
+                <a href="submissions.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Riwayat</a>
+                <a href="process-flow.html" class="text-gray-700 hover:text-blue-600 transition font-medium">Proses</a>
+            </div>
+            <a href="index.html" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span class="hidden sm:inline">Pengajuan Baru</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 md:py-32">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="fade-in-up">
+                    <div class="mb-4">
+                        <span class="bg-blue-400 bg-opacity-30 text-blue-100 px-4 py-2 rounded-full text-sm font-semibold">
+                            🎯 Solusi Modern untuk Keamanan
+                        </span>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                        Izin CCTV Jadi Mudah
+                    </h1>
+                    <p class="text-xl text-blue-100 mb-8 leading-relaxed">
+                        Sistem pengajuan izin pembukaan CCTV yang sederhana, cepat, dan transparan tanpa perlu login kompleks.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="index.html" class="bg-white text-blue-600 font-bold px-8 py-4 rounded-lg hover:bg-blue-50 transition flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fas fa-play"></i>
+                            Buat Pengajuan
+                        </a>
+                        <a href="process-flow.html" class="bg-blue-500 text-white font-bold px-8 py-4 rounded-lg hover:bg-blue-400 transition flex items-center justify-center gap-2 border-2 border-white">
+                            <i class="fas fa-book"></i>
+                            Pelajari Proses
+                        </a>
+                    </div>
+                </div>
+                <div class="fade-in-up" style="animation-delay: 0.2s">
+                    <div class="relative">
+                        <div class="bg-blue-400 bg-opacity-20 rounded-2xl p-8 floating">
+                            <i class="fas fa-video text-8xl text-blue-200 opacity-50 absolute top-8 right-8"></i>
+                            <div class="relative z-10">
+                                <div class="bg-white rounded-lg p-6 shadow-2xl">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="bg-blue-100 p-3 rounded-lg" id="lastSubmitIcon">
+                                            <i class="fas fa-check-circle text-blue-600 text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900">Pengajuan Terakhir</p>
+                                            <p class="text-sm text-gray-600" id="lastRefNumber">-</p>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-3 text-sm text-gray-600 space-y-1">
+                                        <p><i class="fas fa-user mr-2 text-blue-600"></i><span id="lastNama">-</span></p>
+                                        <p><i class="fas fa-check-circle mr-2 text-blue-600"></i><span id="lastStatus">Menunggu Verifikasi</span></p>
+                                        <p><i class="fas fa-calendar mr-2 text-blue-600"></i><span id="lastDate">-</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Dashboard -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Statistik Pengajuan</h2>
+                <p class="text-gray-600">Update real-time dari data pengajuan yang masuk</p>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6">
+                <!-- Total Applications -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition transform hover:scale-105">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Total Pengajuan</p>
+                            <p class="text-4xl font-bold text-blue-600 mt-2" id="dashTotalCount">0</p>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-lg">
+                            <i class="fas fa-file-alt text-blue-600 text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600">Semua pengajuan yang pernah dibuat</p>
+                </div>
+
+                <!-- Pending Verification -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition transform hover:scale-105">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Menunggu Verifikasi</p>
+                            <p class="text-4xl font-bold text-yellow-600 mt-2" id="dashPendingCount">0</p>
+                        </div>
+                        <div class="bg-yellow-100 p-4 rounded-lg">
+                            <i class="fas fa-hourglass-half text-yellow-600 text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600">Sedang dalam tahap TR</p>
+                </div>
+
+                <!-- Verified -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition transform hover:scale-105">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Terverifikasi</p>
+                            <p class="text-4xl font-bold text-blue-600 mt-2" id="dashVerifiedCount">0</p>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-lg">
+                            <i class="fas fa-check-circle text-blue-600 text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600">Sudah diverifikasi SPV TR</p>
+                </div>
+
+                <!-- Approved -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition transform hover:scale-105">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Disetujui</p>
+                            <p class="text-4xl font-bold text-green-600 mt-2" id="dashApprovedCount">0</p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <i class="fas fa-thumbs-up text-green-600 text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600">Pengajuan disetujui</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Fitur Unggulan</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Platform kami dirancang dengan fokus pada kemudahan penggunaan dan efisiensi</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-blue-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-edit text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Formulir Interaktif</h3>
+                    <p class="text-gray-600 mb-4">Formulir yang mudah diisi dengan validasi real-time untuk memastikan data selalu akurat dan lengkap.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-blue-600">✓</span> User-friendly interface</li>
+                        <li class="flex gap-2"><span class="text-blue-600">✓</span> Validasi otomatis</li>
+                        <li class="flex gap-2"><span class="text-blue-600">✓</span> Tanpa login rumit</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-green-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-history text-green-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Tracking Pengajuan</h3>
+                    <p class="text-gray-600 mb-4">Pantau status pengajuan Anda secara real-time dengan dashboard yang informatif dan mudah dipahami.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-green-600">✓</span> Dashboard modern</li>
+                        <li class="flex gap-2"><span class="text-green-600">✓</span> Nomor referensi unik</li>
+                        <li class="flex gap-2"><span class="text-green-600">✓</span> Riwayat lengkap</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-orange-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-stream text-orange-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Visualisasi Proses</h3>
+                    <p class="text-gray-600 mb-4">Pahami setiap tahapan proses pengajuan melalui flowchart yang jelas dan penjelasan detail.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-orange-600">✓</span> Flowchart lengkap</li>
+                        <li class="flex gap-2"><span class="text-orange-600">✓</span> Penjelasan setiap step</li>
+                        <li class="flex gap-2"><span class="text-orange-600">✓</span> Informasi stakeholder</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-purple-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-purple-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Mobile Responsive</h3>
+                    <p class="text-gray-600 mb-4">Akses dari mana saja, kapan saja, di perangkat apa pun dengan antarmuka yang responsif dan cepat.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-purple-600">✓</span> Desktop optimized</li>
+                        <li class="flex gap-2"><span class="text-purple-600">✓</span> Mobile friendly</li>
+                        <li class="flex gap-2"><span class="text-purple-600">✓</span> Aksesibel di semua device</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-red-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-print text-red-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Export & Cetak</h3>
+                    <p class="text-gray-600 mb-4">Cetak dan simpan detail pengajuan Anda untuk referensi dan dokumentasi offline dengan mudah.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-red-600">✓</span> Cetak dokumen</li>
+                        <li class="flex gap-2"><span class="text-red-600">✓</span> Export informasi</li>
+                        <li class="flex gap-2"><span class="text-red-600">✓</span> Arsip digital</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-xl shadow-lg p-8 feature-card-hover">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-indigo-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Data Aman</h3>
+                    <p class="text-gray-600 mb-4">Data Anda disimpan aman di browser lokal tanpa transmisi data yang tidak perlu dan tidak berisiko.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-indigo-600">✓</span> Local storage</li>
+                        <li class="flex gap-2"><span class="text-indigo-600">✓</span> Privacy first</li>
+                        <li class="flex gap-2"><span class="text-indigo-600">✓</span> No third party</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Cara Kerja Sistem</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Proses yang transparan dan efisien dari awal hingga akhir</p>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline -->
+                <div class="grid md:grid-cols-4 gap-8 mb-16">
+                    <div class="relative">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10 font-bold">1</div>
+                        <div class="bg-blue-50 rounded-lg p-6 text-center">
+                            <h3 class="font-bold text-gray-900 mb-2">Pengajuan</h3>
+                            <p class="text-sm text-gray-600">Isi formulir dengan data lengkap dan akurat</p>
+                        </div>
+                        <div class="hidden md:block absolute top-6 left-full w-8 h-0.5 bg-gray-300 z-0" style="transform: translateY(-50%)"></div>
+                    </div>
+
+                    <div class="relative">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10 font-bold">2</div>
+                        <div class="bg-blue-50 rounded-lg p-6 text-center">
+                            <h3 class="font-bold text-gray-900 mb-2">Verifikasi</h3>
+                            <p class="text-sm text-gray-600">SPV TR verifikasi dan review data</p>
+                        </div>
+                        <div class="hidden md:block absolute top-6 left-full w-8 h-0.5 bg-gray-300 z-0" style="transform: translateY(-50%)"></div>
+                    </div>
+
+                    <div class="relative">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10 font-bold">3</div>
+                        <div class="bg-blue-50 rounded-lg p-6 text-center">
+                            <h3 class="font-bold text-gray-900 mb-2">Persetujuan</h3>
+                            <p class="text-sm text-gray-600">Dapatkan persetujuan (ACC) resmi</p>
+                        </div>
+                        <div class="hidden md:block absolute top-6 left-full w-8 h-0.5 bg-gray-300 z-0" style="transform: translateY(-50%)"></div>
+                    </div>
+
+                    <div class="relative">
+                        <div class="bg-green-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10 font-bold">✓</div>
+                        <div class="bg-green-50 rounded-lg p-6 text-center">
+                            <h3 class="font-bold text-gray-900 mb-2">Selesai</h3>
+                            <p class="text-sm text-gray-600">Video siap dan serah ke Tim IT</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="process-flow.html" class="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 transition">
+                        <i class="fas fa-arrow-right"></i>
+                        Lihat flowchart lengkap
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="py-20 bg-blue-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Manfaat Sistem</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Tingkatkan efisiensi dan transparansi dalam pengelolaan izin CCTV</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-12">
+                <!-- Quick Action Card -->
+                <div class="bg-white rounded-lg shadow-lg p-8 fade-in border-l-4 border-green-500">
+                    <div class="text-center">
+                        <div class="bg-green-100 w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-eye text-green-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Lihat Pengajuan</h3>
+                        <p class="text-gray-600 mb-6 text-sm">Pantau semua pengajuan CCTV Anda dan lihat status real-time</p>
+                        <a href="submissions.html" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            Lihat Sekarang
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Hemat Waktu</h3>
+                            <p class="text-gray-600">Proses pengajuan lebih cepat dengan sistem yang efisien dan terukur</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Transparansi Tinggi</h3>
+                            <p class="text-gray-600">Ketahui status pengajuan Anda kapan saja dengan tracking real-time</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Dokumentasi Rapi</h3>
+                            <p class="text-gray-600">Semua data terorganisir dan mudah diakses kembali kapan diperlukan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Support Mudah</h3>
+                            <p class="text-gray-600">Bantuan dari SPV TR dan IT kapan pun Anda membutuhkan informasi</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Akses Mana Saja</h3>
+                            <p class="text-gray-600">Platform yang responsif memungkinkan akses dari device apa pun</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Akurat & Konsisten</h3>
+                            <p class="text-gray-600">Validasi otomatis memastikan data selalu akurat dan lengkap</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-6">Siap Membuat Pengajuan?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Mulai proses pengajuan izin CCTV Anda hari ini. Cepat, mudah, dan transparan!</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="index.html" class="bg-white text-blue-600 font-bold px-8 py-4 rounded-lg hover:bg-blue-50 transition flex items-center justify-center gap-2 shadow-lg">
+                    <i class="fas fa-paper-plane"></i>
+                    Buat Pengajuan Baru
+                </a>
+                <a href="submissions.html" class="bg-blue-500 text-white font-bold px-8 py-4 rounded-lg hover:bg-blue-400 transition flex items-center justify-center gap-2 border-2 border-white">
+                    <i class="fas fa-history"></i>
+                    Lihat Pengajuan Saya
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-camera"></i>
+                        CCTV Permit System
+                    </h3>
+                    <p class="text-sm">Solusi modern untuk pengelolaan izin pembukaan CCTV yang efisien dan transparan.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Navigasi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="hover:text-white transition">Pengajuan</a></li>
+                        <li><a href="submissions.html" class="hover:text-white transition">Riwayat</a></li>
+                        <li><a href="process-flow.html" class="hover:text-white transition">Proses</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Informasi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="README.md" class="hover:text-white transition">Dokumentasi</a></li>
+                        <li><a href="DEPLOYMENT.md" class="hover:text-white transition">Deployment</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Kontak</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>📧 Tim IT</li>
+                        <li>📞 Receptionist</li>
+                        <li>👤 SPV TR</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-sm">&copy; 2026 CCTV Permit System. Semua hak dilindungi.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition"><i class="fas fa-facebook"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fas fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fas fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load and display statistics on page load
+        function loadDashboardStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(stats => {
+                    document.getElementById('dashTotalCount').textContent = stats.total;
+                    document.getElementById('dashPendingCount').textContent = stats.pending;
+                    document.getElementById('dashVerifiedCount').textContent = stats.verified;
+                    document.getElementById('dashApprovedCount').textContent = stats.approved;
+                    
+                    // Load last submission
+                    loadLastSubmission();
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                    // Fallback to localStorage if server not running
+                    loadStatsFromLocalStorage();
+                });
+        }
+
+        function loadLastSubmission() {
+            fetch('/api/submissions')
+                .then(response => response.json())
+                .then(submissions => {
+                    if (submissions.length > 0) {
+                        const lastSubmission = submissions[submissions.length - 1];
+                        
+                        document.getElementById('lastRefNumber').textContent = lastSubmission.refNumber || '-';
+                        document.getElementById('lastNama').textContent = lastSubmission.nama || '-';
+                        document.getElementById('lastDate').textContent = lastSubmission.timestamp || '-';
+                        
+                        const statusMap = {
+                            'pending': { text: 'Menunggu Verifikasi', icon: 'fa-hourglass-half', color: 'yellow' },
+                            'verified': { text: 'Terverifikasi SPV TR', icon: 'fa-check-circle', color: 'blue' },
+                            'approved': { text: 'Disetujui', icon: 'fa-thumbs-up', color: 'green' },
+                            'rejected': { text: 'Ditolak', icon: 'fa-times-circle', color: 'red' },
+                            'escalated': { text: 'Eskalasi ke OM', icon: 'fa-arrow-up', color: 'orange' }
+                        };
+                        
+                        const status = lastSubmission.status || 'pending';
+                        const statusInfo = statusMap[status] || statusMap['pending'];
+                        document.getElementById('lastStatus').textContent = statusInfo.text;
+                        
+                        const iconEl = document.getElementById('lastSubmitIcon');
+                        iconEl.className = `bg-${statusInfo.color}-100 p-3 rounded-lg`;
+                        iconEl.innerHTML = `<i class="fas ${statusInfo.icon} text-${statusInfo.color}-600 text-2xl"></i>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading last submission:', error);
+                });
+        }
+
+        function loadStatsFromLocalStorage() {
+            const submissions = JSON.parse(localStorage.getItem('cctv_submissions') || '[]');
+            
+            const total = submissions.length;
+            const pending = submissions.filter(s => !s.status || s.status === 'pending').length;
+            const verified = submissions.filter(s => s.status === 'verified').length;
+            const approved = submissions.filter(s => s.status === 'approved').length;
+            
+            document.getElementById('dashTotalCount').textContent = total;
+            document.getElementById('dashPendingCount').textContent = pending;
+            document.getElementById('dashVerifiedCount').textContent = verified;
+            document.getElementById('dashApprovedCount').textContent = approved;
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+        });
+
+        // Also load stats if page is already loaded
+        if (document.readyState === 'complete') {
+            loadDashboardStats();
+        }
+
+        // Reload stats every 2 seconds to show real-time updates
+        setInterval(loadDashboardStats, 2000);
+
+        // Smooth scroll untuk anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

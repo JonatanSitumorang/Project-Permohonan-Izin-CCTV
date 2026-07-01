@@ -1,0 +1,312 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                   SISTEM VERIFIKASI TR - QUICK REFERENCE                      ║
+║                                                                               ║
+║                  Panduan Cepat Untuk Receptionist/SPV TR                      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+📊 5 STATUS PENGAJUAN
+═════════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⏳ PENDING (Menunggu Verifikasi)                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Status: Pengajuan baru masuk                                              │
+│ • Warna: Kuning                                                             │
+│ • Action: Bisa di-terima, tolak, atau eskalasi                            │
+│ • Next: Waiting for TR review                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ✅ VERIFIED (Terverifikasi TR)                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Status: Sudah terverifikasi & diterima oleh TR                           │
+│ • Warna: Biru                                                              │
+│ • Action: Sudah done verifikasi, bisa ubah ke status lain                 │
+│ • Next: Lanjut ke Disposisi IT                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ❌ REJECTED (Ditolak)                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Status: Pengajuan ditolak oleh TR                                         │
+│ • Warna: Merah                                                             │
+│ • Action: Final, tidak bisa diubah                                         │
+│ • Next: Berhenti di sini, perlu pengajuan baru                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ⬆️  ESCALATED (Eskalasi ke OM)                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Status: Perlu keputusan dari Operational Manager                         │
+│ • Warna: Orange                                                            │
+│ • Action: Menunggu review dari OM                                          │
+│ • Next: OM akan approve atau reject                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 👍 APPROVED (Disetujui)                                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Status: Final OK, pengajuan disetujui                                     │
+│ • Warna: Hijau                                                             │
+│ • Action: Sudah final, tidak bisa diubah                                   │
+│ • Next: Siap untuk serah ke Tim IT                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+🔄 ALUR VERIFIKASI SEDERHANA
+═════════════════════════════════════════════════════════════════════════════════
+
+                     ┌──────────────────┐
+                     │   PENGAJUAN      │
+                     │   MASUK (Pending)│
+                     └────────┬─────────┘
+                              │
+                    ┌─────────▼─────────┐
+                    │  TR BUKA MODAL    │
+                    │  (Icon EDIT)      │
+                    └────────┬──────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+         ┌────▼──────┐ ┌─────▼────┐ ┌──────▼──────┐
+         │  ✅TERIMA │ │ ❌TOLAK │ │ ⬆️ESKALASI  │
+         └────┬──────┘ └─────┬────┘ └──────┬──────┘
+              │              │             │
+         ┌────▼──────────────▼─────────────▼─────┐
+         │  STATUS BERUBAH & SIMPAN OTOMATIS     │
+         │  • Data tersimpan di localStorage     │
+         │  • Tabel refresh otomatis             │
+         │  • Statistik update otomatis          │
+         └────────────────────────────────────────┘
+
+
+🎯 STEP-BY-STEP VERIFIKASI
+═════════════════════════════════════════════════════════════════════════════════
+
+STEP 1️⃣: BUKA DASHBOARD
+   1. Buka file: submissions.html
+   2. Lihat tabel "Daftar Pengajuan"
+   3. Filter status = "Menunggu Verifikasi" ⏳
+
+STEP 2️⃣: REVIEW PENGAJUAN (Opsional)
+   1. Klik icon MATA (👁️) untuk lihat detail
+   2. Baca semua informasi pemohon
+   3. Tutup modal jika selesai review
+   
+   CHECKLIST REVIEW:
+   ✓ Nama pemohon lengkap & valid
+   ✓ Departemen sesuai organisasi
+   ✓ Lokasi SPESIFIK (bukan hanya "Building A")
+   ✓ Tujuan sesuai kategori
+   ✓ Telepon & email valid
+   ✓ Tidak ada duplikasi
+
+STEP 3️⃣: BUKA MODAL VERIFIKASI
+   1. Klik icon EDIT (✏️) di kolom Aksi
+   2. Modal "Verifikasi Pengajuan - TR" terbuka
+   3. Lihat detail di modal:
+      • No. Referensi
+      • Nama Pemohon
+      • Status Saat Ini
+
+STEP 4️⃣: PILIH TINDAKAN
+   
+   OPSI A - TERIMA ✅
+   ├─ Kapan: Jika pengajuan valid & lengkap
+   ├─ Action: Klik "Terima & Verifikasi"
+   ├─ Hasil: Status → Terverifikasi TR
+   └─ Next: Lanjut ke Disposisi IT
+
+   OPSI B - TOLAK ❌
+   ├─ Kapan: Jika ada data invalid
+   ├─ Action: Klik "Tolak Pengajuan"
+   ├─ Hasil: Status → Ditolak
+   └─ Next: Berhenti di sini
+
+   OPSI C - ESKALASI ⬆️
+   ├─ Kapan: Butuh approval dari OM
+   ├─ Action: Klik "Eskalasi ke OM"
+   ├─ Hasil: Status → Eskalasi ke OM
+   └─ Next: Menunggu keputusan OM
+
+STEP 5️⃣: LIHAT HASIL
+   1. Modal otomatis tertutup
+   2. Tabel refresh otomatis
+   3. Status kolom berubah
+   4. Alert success muncul
+   5. Statistik card update
+
+
+⚡ KEYBOARD SHORTCUTS
+═════════════════════════════════════════════════════════════════════════════════
+
+Tidak ada shortcut khusus, tapi:
+• Refresh page: F5
+• Developer console: F12
+• Search di page: Ctrl+F
+• Open DevTools: F12
+
+
+💡 TIPS & TRICKS
+═════════════════════════════════════════════════════════════════════════════════
+
+TIP 1: Verifikasi Batch
+   • Lihat statistik card untuk tahu berapa pending
+   • Prioritaskan pending yang ada (tidak perlu urgent)
+   • Coba clear 3-5 pending setiap jam
+
+TIP 2: Lokasi Spesifik
+   Lokasi VALID:
+   ✓ "Building A, Floor 3, Room 301"
+   ✓ "Gedung Utama, Basement, Area Parkir"
+   ✓ "Kompleks, Blok B, Depan Pintu Masuk"
+   
+   Lokasi TIDAK VALID:
+   ✗ "Building A" (terlalu umum)
+   ✗ "Somewhere outside" (tidak jelas)
+   ✗ "Area depan" (relatif & tidak spesifik)
+
+TIP 3: Duplikasi Check
+   • Cek riwayat jika nama & departemen sama
+   • Jika sudah ada yang pending, bisa eskalasi
+   • Jika sudah ada yang approved, tolak sebagai duplikasi
+
+TIP 4: Fast Decision
+   • Kalau OK → Langsung terima (1-2 menit)
+   • Kalau ragu → Buka detail modal dulu
+   • Kalau special → Eskalasi ke OM (tidak perlu malu)
+
+TIP 5: Data Integrity
+   • Jangan ubah status random
+   • Terima hanya kalau yakin
+   • Eskalasi kalau ragu, jangan asal terima
+
+
+🔍 CHECKLIST SEBELUM VERIFIKASI
+═════════════════════════════════════════════════════════════════════════════════
+
+PERSONAL DATA:
+   ☐ Nama pemohon lengkap (tidak "Xx" atau "Admin")
+   ☐ Nomor telepon format valid
+   ☐ Email format valid (ada @ dan domain)
+
+DEPARTEMEN DATA:
+   ☐ Departemen sesuai struktur organisasi
+   ☐ Departemen tidak aneh (tidak "Random Dept")
+   ☐ Bisa divalidasi di struktur perusahaan
+
+LOKASI DATA:
+   ☐ Lokasi spesifik (bukan hanya "Building A")
+   ☐ Ada floor/room/area detail
+   ☐ Lokasi sesuai kebijakan (tidak area terlarang)
+   ☐ Lokasi tidak conflict dengan pengajuan lain
+
+TUJUAN DATA:
+   ☐ Tujuan sesuai kategori pilihan
+   ☐ Tujuan jelas dan masuk akal
+   ☐ Tujuan bukan "just testing" atau semacamnya
+
+VALIDASI SISTEM:
+   ☐ Tidak ada duplikasi pending
+   ☐ Sudah tidak ada yang approved untuk lokasi ini
+   ☐ Data tidak mencurigakan
+   ☐ Sistem tidak ada warning
+
+
+📞 FAQ CEPAT
+═════════════════════════════════════════════════════════════════════════════════
+
+Q: Berapa lama saya harus verify pengajuan?
+A: Recommended 1x24 jam. Target clear pending setiap hari.
+
+Q: Bisa undo kalau salah verify?
+A: Ya, klik edit lagi dan ubah ke status yang seharusnya.
+
+Q: Kalau ragu harus apa?
+A: Eskalasi ke OM, lebih aman daripada asal terima.
+
+Q: Status "Escalated" itu artinya apa?
+A: Pengajuan butuh keputusan dari Operational Manager.
+
+Q: Berapa lama OM biasanya putuskan?
+A: Tergantung, tapi sampaikan ke OM untuk prioritas.
+
+Q: Bisa cek riwayat yang sudah diverifikasi?
+A: Ya, di submissions.html lihat kolom "Status" yang bukan Pending.
+
+Q: Kalau data tidak jelas, harus apa?
+A: Tolak dan suruh pemohon buat pengajuan baru dengan data lebih jelas.
+
+Q: Data personal pemohon aman?
+A: Ya, tersimpan hanya di browser, tidak dikirim ke server.
+
+
+⚠️ COMMON MISTAKES
+═════════════════════════════════════════════════════════════════════════════════
+
+MISTAKE 1: Lokasi terlalu umum
+   ✗ "Building area"
+   ✓ "Building A, Floor 3, Hallway"
+
+MISTAKE 2: Asal terima tanpa review
+   ✗ Terima semua tanpa check
+   ✓ Review detail dulu, baru putuskan
+
+MISTAKE 3: Lupa escalate yang urgent
+   ✗ Langsung tolak kalau ragu
+   ✓ Eskalasi ke OM kalau butuh approval
+
+MISTAKE 4: Tidak consistent criteria
+   ✗ Terima yang jelek, tolak yang baik
+   ✓ Gunakan kriteria sama untuk semua
+
+MISTAKE 5: Tidak komunikasi ke pemohon
+   ✗ Tolak tanpa bilang alasan
+   ✓ Jika possible, sampaikan alasan ke pemohon
+
+
+🎓 CONTOH SKENARIO
+═════════════════════════════════════════════════════════════════════════════════
+
+SCENARIO 1: Normal Case
+─────────────────────────
+Budi (Security) pengajuan CCTV di Building A, Floor 3 untuk security.
+→ Status: Pending ⏳
+→ Review: OK semua ✓
+→ Keputusan: TERIMA ✅
+→ Result: Status = Verified ✓
+
+
+SCENARIO 2: Data Unclear
+─────────────────────────
+Andi (Finance) pengajuan CCTV di "Building area" tidak jelas lokasi.
+→ Status: Pending ⏳
+→ Review: Lokasi tidak spesifik ✗
+→ Keputusan: TOLAK ❌
+→ Result: Status = Rejected ✗
+
+
+SCENARIO 3: Need Escalation
+─────────────────────────────
+Rini (HR) pengajuan CCTV di sensitive area butuh approval atas.
+→ Status: Pending ⏳
+→ Review: OK tapi sensitive area ⬆️
+→ Keputusan: ESKALASI ⬆️
+→ Result: Status = Escalated ⬆️
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+RINGKAS:
+1. Buka submissions.html
+2. Klik icon EDIT (✏️) pengajuan yang pending ⏳
+3. Pilih: Terima ✅ / Tolak ❌ / Eskalasi ⬆️
+4. Status otomatis terupdate
+5. Selesai!
+
+BACA LEBIH LANJUT:
+• VERIFICATION-SYSTEM.md - Overview lengkap
+• HOW-VERIFICATION-WORKS.md - Panduan detail
+
+═════════════════════════════════════════════════════════════════════════════════
