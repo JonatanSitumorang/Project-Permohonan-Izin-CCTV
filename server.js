@@ -154,6 +154,23 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/landing.html');
 });
 
+// Serve specific HTML files
+app.get('/index.html', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/submissions.html', (req, res) => {
+    res.sendFile(__dirname + '/submissions.html');
+});
+
+app.get('/process-flow.html', (req, res) => {
+    res.sendFile(__dirname + '/process-flow.html');
+});
+
+app.get('/landing.html', (req, res) => {
+    res.sendFile(__dirname + '/landing.html');
+});
+
 // Fallback for any other route - serve index.html (SPA routing)
 app.get('*', (req, res) => {
     res.sendFile(__dirname + '/index.html');
