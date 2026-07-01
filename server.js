@@ -14,17 +14,25 @@ app.use(express.static('.'));
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => {
-    console.log('✅ MongoDB Connected successfully');
-})
-.catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-    process.exit(1);
-});
+if (!MONGODB_URI) {
+    console.error('❌ MONGODB_URI environment variable is not set!');
+    console.log('⚠️  Running in demo mode without database');
+}
+
+if (MONGODB_URI) {
+    mongoose.connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log('✅ MongoDB Connected successfully');
+    })
+    .catch((error) => {
+        console.error('❌ MongoDB connection error:', error.message);
+    });
+} else {
+    console.log('⚠️  MongoDB connection skipped - using demo mode');
+}
 
 // Define Submission Schema
 const submissionSchema = new mongoose.Schema({
