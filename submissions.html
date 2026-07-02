@@ -446,10 +446,15 @@
             printWindow.print();
         }
 
-        function deleteSubmission(index) {
-            const submission = allSubmissions[index];
+        function deleteSubmission(submissionId) {
+            const submission = allSubmissions.find(s => s._id === submissionId);
+            if (!submission) {
+                alert('❌ Pengajuan tidak ditemukan');
+                return;
+            }
+            
             if (confirm(`Apakah Anda yakin ingin menghapus pengajuan ${submission.refNumber}?\n\nTindakan ini tidak bisa diundur!`)) {
-                fetch(`/api/submissions/${submission._id}`, {
+                fetch(`/api/submissions/${submissionId}`, {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
