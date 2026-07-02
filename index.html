@@ -129,11 +129,11 @@
             <div class="md:col-span-2">
                 <div class="bg-white rounded-xl shadow-lg p-4 md:p-8 fade-in">
                     <div class="mb-6">
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <h2 class="text-lg md:text-2xl font-bold text-gray-900 flex items-center gap-2">
                             <i class="fas fa-edit text-blue-600"></i>
                             Formulir Pengajuan Izin CCTV
                         </h2>
-                        <p class="text-gray-600 mt-2">Lengkapi informasi di bawah untuk memulai pengajuan</p>
+                        <p class="text-xs md:text-base text-gray-600 mt-2">Lengkapi informasi di bawah untuk memulai pengajuan</p>
                     </div>
 
                     <form id="permissionForm" class="space-y-6">
@@ -185,47 +185,47 @@
 
                         <!-- Nomor Telepon -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label class="block text-xs md:text-sm font-semibold text-gray-700 mb-2">
                                 <i class="fas fa-phone text-blue-600 mr-2"></i>Nomor Telepon
                             </label>
                             <input type="tel" placeholder="Masukkan nomor telepon"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                 required>
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label class="block text-xs md:text-sm font-semibold text-gray-700 mb-2">
                                 <i class="fas fa-envelope text-blue-600 mr-2"></i>Email (Opsional)
                             </label>
                             <input type="email" placeholder="Masukkan email aktif (opsional)"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                         </div>
 
                         <!-- Tanggal & Waktu Pengajuan -->
-                        <div class="grid md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <label class="block text-xs md:text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-calendar text-blue-600 mr-2"></i>Tanggal Pengajuan
                                 </label>
                                 <input type="date" id="customDate"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                    class="w-full px-3 md:px-4 py-2 md:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <label class="block text-xs md:text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-clock text-blue-600 mr-2"></i>Waktu Pengajuan
                                 </label>
                                 <input type="time" id="customTime"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                    class="w-full px-3 md:px-4 py-2 md:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             </div>
                         </div>
 
                         <!-- Estimasi Waktu Proses -->
-                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                            <p class="text-sm font-semibold text-blue-900 mb-2">
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-3 md:p-4 rounded">
+                            <p class="text-xs md:text-sm font-semibold text-blue-900 mb-2">
                                 <i class="fas fa-hourglass-end mr-2"></i>Estimasi Waktu Proses
                             </p>
-                            <div class="grid md:grid-cols-3 gap-3 text-sm text-blue-800">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 text-xs md:text-sm text-blue-800">
                                 <div>
                                     <p class="font-bold">Verifikasi SPV TR:</p>
                                     <p id="estVerifikasi">1-2 hari kerja</p>
@@ -243,20 +243,20 @@
 
                         <!-- Catatan Tambahan -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label class="block text-xs md:text-sm font-semibold text-gray-700 mb-2">
                                 <i class="fas fa-sticky-note text-blue-600 mr-2"></i>Catatan Tambahan (Opsional)
                             </label>
                             <textarea placeholder="Tambahkan catatan atau informasi penting lainnya" rows="3"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="flex gap-4 pt-6">
-                            <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg transform hover:scale-105 transition flex items-center justify-center gap-2">
+                        <div class="flex flex-col sm:flex-row gap-3 pt-4 md:pt-6">
+                            <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm md:text-base font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg hover:shadow-lg transform hover:scale-105 transition flex items-center justify-center gap-2">
                                 <i class="fas fa-paper-plane"></i>
                                 Kirim Pengajuan
                             </button>
-                            <button type="reset" class="flex-1 bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition flex items-center justify-center gap-2">
+                            <button type="reset" class="flex-1 bg-gray-200 text-gray-700 text-sm md:text-base font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-gray-300 transition flex items-center justify-center gap-2">
                                 <i class="fas fa-redo"></i>
                                 Reset
                             </button>
@@ -268,8 +268,8 @@
             <!-- Sidebar - Process Info -->
             <div class="space-y-6">
                 <!-- Current Status Card -->
-                <div class="bg-white rounded-xl shadow-lg p-6 fade-in" style="animation-delay: 0.2s">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 fade-in" style="animation-delay: 0.2s">
+                    <h3 class="text-base md:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <i class="fas fa-info-circle text-blue-600"></i>
                         Status Pengajuan
                     </h3>
@@ -282,12 +282,12 @@
                 </div>
 
                 <!-- Process Info Card -->
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg p-6 border-l-4 border-orange-500 fade-in" style="animation-delay: 0.3s">
-                    <h3 class="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg p-4 md:p-6 border-l-4 border-orange-500 fade-in" style="animation-delay: 0.3s">
+                    <h3 class="text-base md:text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">
                         <i class="fas fa-exclamation-triangle"></i>
                         Butuh Keputusan Manajemen?
                     </h3>
-                    <p class="text-sm text-orange-800 mb-4">
+                    <p class="text-xs md:text-sm text-orange-800 mb-4">
                         Jika diperlukan eskalasi atau keputusan dari Operational Manager, sistem akan mengarahkan ke proses persetujuan tambahan.
                     </p>
                     <div class="bg-white bg-opacity-70 rounded p-3 text-xs text-orange-900">
@@ -296,12 +296,12 @@
                 </div>
 
                 <!-- Quick Info Card -->
-                <div class="bg-white rounded-xl shadow-lg p-6 fade-in" style="animation-delay: 0.4s">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 fade-in" style="animation-delay: 0.4s">
+                    <h3 class="text-base md:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <i class="fas fa-lightbulb text-yellow-500"></i>
                         Tips
                     </h3>
-                    <ul class="space-y-2 text-sm text-gray-700">
+                    <ul class="space-y-2 text-xs md:text-sm text-gray-700">
                         <li class="flex gap-2">
                             <span class="text-blue-600 font-bold">•</span>
                             <span>Isi semua data dengan jelas dan akurat</span>
