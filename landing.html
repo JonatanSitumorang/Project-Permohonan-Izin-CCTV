@@ -493,22 +493,35 @@
     <script>
         // Load and display statistics on page load
         function loadDashboardStats() {
-            fetch('/api/stats')
-                .then(response => response.json())
-                .then(stats => {
-                    document.getElementById('dashTotalCount').textContent = stats.total;
-                    document.getElementById('dashPendingCount').textContent = stats.pending;
-                    document.getElementById('dashVerifiedCount').textContent = stats.verified;
-                    document.getElementById('dashApprovedCount').textContent = stats.approved;
-                    
-                    // Load last submission
-                    loadLastSubmission();
-                })
-                .catch(error => {
-                    console.error('Error loading stats:', error);
-                    // Fallback to localStorage if server not running
-                    loadStatsFromLocalStorage();
-                });
+            let retryCount = 0;
+            const maxRetries = 2;
+            
+            function fetchWithRetry() {
+                fetch('/api/stats')
+                    .then(response => response.json())
+                    .then(stats => {
+                        document.getElementById('dashTotalCount').textContent = stats.total;
+                        document.getElementById('dashPendingCount').textContent = stats.pending;
+                        document.getElementById('dashVerifiedCount').textContent = stats.verified;
+                        document.getElementById('dashApprovedCount').textContent = stats.approved;
+                        
+                        // Load last submission
+                        loadLastSubmission();
+                    })
+                    .catch(error => {
+                        retryCount++;
+                        console.error(`Error loading stats (attempt ${retryCount}):`, error);
+                        
+                        if (retryCount < maxRetries) {
+                            setTimeout(fetchWithRetry, 2000);
+                        } else {
+                            // Fallback to localStorage if server not running
+                            loadStatsFromLocalStorage();
+                        }
+                    });
+            }
+            
+            fetchWithRetry();
         }
 
         function loadLastSubmission() {

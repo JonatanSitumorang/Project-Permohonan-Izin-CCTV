@@ -302,18 +302,32 @@
         let allSubmissions = [];
 
         function loadSubmissions() {
-            // Load from API
-            fetch('/api/submissions')
-                .then(response => response.json())
-                .then(data => {
-                    allSubmissions = data.sort((a, b) => (b.timestampMs || b.id || 0) - (a.timestampMs || a.id || 0));
-                    renderSubmissions();
-                    updateStatistics();
-                })
-                .catch(error => {
-                    console.error('Error loading submissions:', error);
-                    alert('Gagal memuat data. Silakan refresh halaman atau hubungi support.');
-                });
+            // Load from API with retry logic
+            const maxRetries = 3;
+            let retryCount = 0;
+            
+            function fetchWithRetry() {
+                fetch('/api/submissions')
+                    .then(response => response.json())
+                    .then(data => {
+                        allSubmissions = data.sort((a, b) => (b.timestampMs || b.id || 0) - (a.timestampMs || a.id || 0));
+                        renderSubmissions();
+                        updateStatistics();
+                    })
+                    .catch(error => {
+                        retryCount++;
+                        console.error(`Error loading submissions (attempt ${retryCount}/${maxRetries}):`, error);
+                        
+                        if (retryCount < maxRetries) {
+                            console.log(`Retrying in 2 seconds...`);
+                            setTimeout(fetchWithRetry, 2000);
+                        } else {
+                            alert('Gagal memuat data setelah 3 kali percobaan. Silakan refresh halaman.');
+                        }
+                    });
+            }
+            
+            fetchWithRetry();
         }
 
         function getStatusInfo(status) {
