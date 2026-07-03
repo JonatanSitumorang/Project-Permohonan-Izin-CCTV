@@ -9,7 +9,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Serve static files
+app.use(express.static(__dirname, {
+    index: 'landing.html' // Serve landing.html as default for root
+}));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -154,8 +156,13 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // Handle favicon request
-app.get('/favicon.ico', (req, res) => {
+app.get('/favicon.ico', (_req, res) => {
     res.status(204).end(); // Return empty response, no content
+});
+
+// Fallback for SPA - if route not found, serve landing.html
+app.use((_req, res) => {
+    res.sendFile(__dirname + '/landing.html');
 });
 
 // Start server
