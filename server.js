@@ -155,14 +155,26 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// Explicit routes for HTML files (must come BEFORE static middleware behavior)
+app.get('/index.html', (_req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/submissions.html', (_req, res) => {
+    res.sendFile(__dirname + '/submissions.html');
+});
+
+app.get('/process-flow.html', (_req, res) => {
+    res.sendFile(__dirname + '/process-flow.html');
+});
+
+app.get('/landing.html', (_req, res) => {
+    res.sendFile(__dirname + '/landing.html');
+});
+
 // Handle favicon request
 app.get('/favicon.ico', (_req, res) => {
     res.status(204).end(); // Return empty response, no content
-});
-
-// Fallback for SPA - if route not found, serve landing.html
-app.use((_req, res) => {
-    res.sendFile(__dirname + '/landing.html');
 });
 
 // Start server
