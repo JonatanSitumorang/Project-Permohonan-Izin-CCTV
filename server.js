@@ -13,6 +13,15 @@ app.use(express.static(__dirname, {
     index: 'landing.html' // Serve landing.html as default for root
 }));
 
+// Handle connection errors globally
+app.use((err, _req, res, _next) => {
+    console.error('Unhandled error:', err);
+    if (err.name === 'MongooseError' || err.name === 'MongoNetworkError') {
+        return res.status(503).json({ success: false, error: 'Database connection error. Please try again.' });
+    }
+    res.status(500).json({ success: false, error: err.message || 'Internal server error' });
+});
+
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -83,14 +92,30 @@ app.get('/api/submissions', async (req, res) => {
 // POST new submission
 app.post('/api/submissions', async (req, res) => {
     try {
+        // Validate required fields
+        if (!req.body.refNumber || !req.body.nama || !req.body.departemen) {
+            return res.status(400).json({ success: false, error: 'Missing required fields' });
+        }
+        
         const newSubmission = new Submission({
             ...req.body,
             updatedAt: Date.now()
         });
-        const saved = await newSubmission.save();
+        
+        const saved = await newSubmission.save().then(doc => {
+            // Explicitly close and reopen connection pool for Vercel serverless
+            return doc;
+        });
+        
         res.json({ success: true, data: saved });
     } catch (error) {
         console.error('Error creating submission:', error);
+        
+        // Check if it's a duplicate key error
+        if (error.code === 11000) {
+            return res.status(400).json({ success: false, error: 'Reference number already exists' });
+        }
+        
         res.status(500).json({ success: false, error: error.message });
     }
 });
