@@ -25,10 +25,12 @@ if (MONGODB_URI) {
     mongoose.connect(MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 3000,
-        socketTimeoutMS: 30000,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
         maxPoolSize: 10,
         minPoolSize: 2,
+        retryWrites: true,
+        w: 'majority'
     })
     .then(() => {
         console.log('✅ MongoDB Connected successfully');
@@ -114,9 +116,11 @@ app.put('/api/submissions/:id', async (req, res) => {
 });
 
 // DELETE submission
-app.delete('/api/submissions/:id', async (req, res) => {
+app.delete('/api/submissions/:id', async (_req, res) => {
     try {
-        const submission = await Submission.findByIdAndDelete(req.params.id);
+        const submission = await Submission.findByIdAndDelete(_req.params.id, {
+            timeout: 30000
+        });
         
         if (!submission) {
             return res.status(404).json({ success: false, error: 'Submission not found' });

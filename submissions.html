@@ -494,22 +494,36 @@
             }
             
             if (confirm(`Apakah Anda yakin ingin menghapus pengajuan ${submission.refNumber}?\n\nTindakan ini tidak bisa diundur!`)) {
-                fetch(`/api/submissions/${submissionId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        alert('✅ Pengajuan berhasil dihapus');
-                        loadSubmissions(); // Reload data
-                    } else {
-                        alert('❌ Gagal menghapus: ' + result.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('❌ Error menghapus pengajuan');
-                });
+                let retryCount = 0;
+                const maxRetries = 3;
+                
+                function attemptDelete() {
+                    fetch(`/api/submissions/${submissionId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert('✅ Pengajuan berhasil dihapus');
+                            loadSubmissions(); // Reload data
+                        } else {
+                            alert('❌ Gagal menghapus: ' + result.error);
+                        }
+                    })
+                    .catch(error => {
+                        retryCount++;
+                        console.error(`Delete attempt ${retryCount} failed:`, error);
+                        
+                        if (retryCount < maxRetries) {
+                            console.log(`Retrying delete in 2 seconds... (attempt ${retryCount}/${maxRetries})`);
+                            setTimeout(attemptDelete, 2000);
+                        } else {
+                            alert('❌ Gagal menghapus pengajuan setelah beberapa kali percobaan. Silahkan coba lagi nanti.');
+                        }
+                    });
+                }
+                
+                attemptDelete();
             }
         }
 
