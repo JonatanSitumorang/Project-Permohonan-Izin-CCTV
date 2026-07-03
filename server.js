@@ -22,7 +22,7 @@ app.use((err, _req, res, _next) => {
     res.status(500).json({ success: false, error: err.message || 'Internal server error' });
 });
 
-// MongoDB Connection
+// MongoDB Connection - Cache globally to avoid connection storming on Vercel serverless
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -30,16 +30,19 @@ if (!MONGODB_URI) {
     console.log('⚠️  Running in demo mode without database');
 }
 
-if (MONGODB_URI) {
+// Ensure we only connect once across function invocations (critical for Vercel)
+if (MONGODB_URI && !mongoose.connection.readyState) {
     mongoose.connect(MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 8000,
         socketTimeoutMS: 45000,
-        maxPoolSize: 10,
-        minPoolSize: 2,
+        connectTimeoutMS: 10000,
+        maxPoolSize: 5,
+        minPoolSize: 1,
         retryWrites: true,
-        w: 'majority'
+        w: 'majority',
+        family: 4 // Force IPv4 for better compatibility
     })
     .then(() => {
         console.log('✅ MongoDB Connected successfully');
@@ -47,6 +50,17 @@ if (MONGODB_URI) {
     .catch((error) => {
         console.error('❌ MongoDB connection error:', error.message);
     });
+    
+    // Handle connection events
+    mongoose.connection.on('disconnected', () => {
+        console.warn('⚠️  MongoDB disconnected');
+    });
+    
+    mongoose.connection.on('error', (err) => {
+        console.error('❌ MongoDB connection error:', err.message);
+    });
+} else if (MONGODB_URI) {
+    console.log('✅ MongoDB already connected or connecting');
 } else {
     console.log('⚠️  MongoDB connection skipped - using demo mode');
 }
@@ -97,15 +111,18 @@ app.post('/api/submissions', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
         
+        // Check if database is connected
+        if (!mongoose.connection.readyState) {
+            console.warn('⚠️  Attempting to submit but DB not ready');
+            return res.status(503).json({ success: false, error: 'Database not ready. Please try again.' });
+        }
+        
         const newSubmission = new Submission({
             ...req.body,
             updatedAt: Date.now()
         });
         
-        const saved = await newSubmission.save().then(doc => {
-            // Explicitly close and reopen connection pool for Vercel serverless
-            return doc;
-        });
+        const saved = await newSubmission.save();
         
         res.json({ success: true, data: saved });
     } catch (error) {
@@ -114,6 +131,11 @@ app.post('/api/submissions', async (req, res) => {
         // Check if it's a duplicate key error
         if (error.code === 11000) {
             return res.status(400).json({ success: false, error: 'Reference number already exists' });
+        }
+        
+        // Check for timeout/connection errors
+        if (error.message.includes('timed out') || error.name === 'MongoNetworkError') {
+            return res.status(503).json({ success: false, error: 'Database timeout. Please try again.' });
         }
         
         res.status(500).json({ success: false, error: error.message });
