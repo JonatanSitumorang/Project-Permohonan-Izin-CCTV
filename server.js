@@ -175,6 +175,11 @@ app.get('/landing.html', (req, res) => {
     res.sendFile(__dirname + '/landing.html');
 });
 
+// Handle favicon request
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // Return empty response, no content
+});
+
 // Fallback for any other route - serve index.html (SPA routing)
 app.get('*', (req, res) => {
     console.log(`⚠️  Fallback route (*) hit for: ${req.path} - serving index.html`);
