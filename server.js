@@ -103,7 +103,7 @@ app.get('/api/submissions', async (req, res) => {
     }
 });
 
-// POST new submission
+// POST new submission with retry logic
 app.post('/api/submissions', async (req, res) => {
     try {
         // Validate required fields
@@ -113,8 +113,24 @@ app.post('/api/submissions', async (req, res) => {
         
         // Check if database is connected
         if (!mongoose.connection.readyState) {
-            console.warn('⚠️  Attempting to submit but DB not ready');
-            return res.status(503).json({ success: false, error: 'Database not ready. Please try again.' });
+            console.warn('⚠️  DB not ready, attempting to reconnect...');
+            // Wait max 5 seconds for connection
+            const connectionReady = await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (mongoose.connection.readyState === 1) {
+                        clearInterval(checkInterval);
+                        resolve(true);
+                    }
+                }, 500);
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    resolve(false);
+                }, 5000);
+            });
+            
+            if (!connectionReady) {
+                return res.status(503).json({ success: false, error: 'Database sedang tidak siap. Silakan coba lagi.' });
+            }
         }
         
         const newSubmission = new Submission({
@@ -126,7 +142,7 @@ app.post('/api/submissions', async (req, res) => {
         
         res.json({ success: true, data: saved });
     } catch (error) {
-        console.error('Error creating submission:', error);
+        console.error('Error creating submission:', error.message);
         
         // Check if it's a duplicate key error
         if (error.code === 11000) {
@@ -134,11 +150,12 @@ app.post('/api/submissions', async (req, res) => {
         }
         
         // Check for timeout/connection errors
-        if (error.message.includes('timed out') || error.name === 'MongoNetworkError') {
-            return res.status(503).json({ success: false, error: 'Database timeout. Please try again.' });
+        if (error.message.includes('timed out') || error.name === 'MongoNetworkError' || error.name === 'MongoServerError') {
+            return res.status(503).json({ success: false, error: 'Database timeout. Coba lagi dalam beberapa saat.' });
         }
         
-        res.status(500).json({ success: false, error: error.message });
+        // Generic error
+        res.status(500).json({ success: false, error: 'Gagal menyimpan pengajuan: ' + error.message });
     }
 });
 

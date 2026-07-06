@@ -449,16 +449,28 @@
             // Send to API with retry logic
             let retryCount = 0;
             const maxRetries = 3;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
             
             function attemptSubmit() {
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim... (${retryCount + 1}/${maxRetries})`;
+                
+                // Create fetch with timeout (20 seconds)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
+                
                 fetch('/api/submissions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
+                    signal: controller.signal
                 })
                 .then(response => {
+                    clearTimeout(timeoutId);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -474,21 +486,34 @@
                         document.getElementById('permissionForm').reset();
                         setDefaultDateTime();
                         
+                        // Reset button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        
                         // Scroll to modal
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
-                        alert('❌ Error: ' + result.error);
+                        throw new Error(result.error || 'Unknown error');
                     }
                 })
                 .catch(error => {
+                    clearTimeout(timeoutId);
                     retryCount++;
-                    console.error(`Submission attempt ${retryCount} failed:`, error);
+                    console.error(`Submission attempt ${retryCount} failed:`, error.message);
                     
                     if (retryCount < maxRetries) {
-                        console.log(`Retrying submission in 2 seconds... (attempt ${retryCount}/${maxRetries})`);
-                        setTimeout(attemptSubmit, 2000);
+                        console.log(`Retrying submission in 3 seconds... (attempt ${retryCount}/${maxRetries})`);
+                        submitBtn.innerHTML = `<i class="fas fa-hourglass-half"></i> Coba Lagi dalam ${3}s...`;
+                        setTimeout(attemptSubmit, 3000);
                     } else {
-                        alert('❌ Gagal mengirim pengajuan setelah beberapa kali percobaan. Silakan coba lagi atau hubungi support.');
+                        // Reset button on final failure
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        
+                        const errorMsg = error.name === 'AbortError' 
+                            ? 'Koneksi timeout. Silakan coba lagi atau hubungi support.'
+                            : `Gagal mengirim pengajuan: ${error.message}. Silakan coba lagi atau hubungi support.`;
+                        alert('❌ ' + errorMsg);
                     }
                 });
             }
