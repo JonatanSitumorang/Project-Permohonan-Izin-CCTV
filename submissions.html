@@ -583,20 +583,33 @@
             const approveBtnSection = document.getElementById('approveBtnSection');
             const rejectBtnSection = document.getElementById('rejectBtnSection');
             const escalateBtnSection = document.getElementById('escalateBtnSection');
+            const approveBtnSection2 = document.getElementById('approveBtnSection2');
             
             // Show/hide buttons berdasarkan status
             if (currentStatus === 'pending') {
+                // Pending: Terima, Tolak, Eskalasi
                 approveBtnSection.classList.remove('hidden');
                 rejectBtnSection.classList.remove('hidden');
                 escalateBtnSection.classList.remove('hidden');
-            } else if (currentStatus === 'escalated') {
-                approveBtnSection.classList.remove('hidden');
-                rejectBtnSection.classList.remove('hidden');
-                escalateBtnSection.classList.add('hidden');
-            } else {
+                approveBtnSection2.classList.add('hidden');
+            } else if (currentStatus === 'verified') {
+                // Verified: Hanya Disetujui (tidak Terima, Tolak, Eskalasi)
                 approveBtnSection.classList.add('hidden');
                 rejectBtnSection.classList.add('hidden');
                 escalateBtnSection.classList.add('hidden');
+                approveBtnSection2.classList.remove('hidden');
+            } else if (currentStatus === 'escalated') {
+                // Escalated: Terima, Tolak (untuk OM review)
+                approveBtnSection.classList.remove('hidden');
+                rejectBtnSection.classList.remove('hidden');
+                escalateBtnSection.classList.add('hidden');
+                approveBtnSection2.classList.add('hidden');
+            } else {
+                // Status lain: hide semua
+                approveBtnSection.classList.add('hidden');
+                rejectBtnSection.classList.add('hidden');
+                escalateBtnSection.classList.add('hidden');
+                approveBtnSection2.classList.add('hidden');
             }
         }
 
@@ -613,6 +626,9 @@
             if (status === 'verified') {
                 message = '✅ Terima & Verifikasi Pengajuan?';
                 details = 'Pengajuan akan diverifikasi dan dilanjutkan ke proses Disposisi IT.';
+            } else if (status === 'approved') {
+                message = '👍 Setujui Pengajuan?';
+                details = 'Pengajuan telah diverifikasi dan akan disetujui untuk diimplementasikan.';
             } else if (status === 'rejected') {
                 message = '❌ Tolak Pengajuan?';
                 details = '⚠️ Pengajuan akan ditolak dan tidak bisa diproses lebih lanjut. Pemohon perlu membuat pengajuan baru.';
@@ -813,6 +829,15 @@
                             ⬆️ Eskalasi ke Operational Manager
                         </button>
                         <p class="text-xs text-gray-600 mt-1">Pengajuan akan dikirim ke OM untuk keputusan lebih lanjut</p>
+                    </div>
+
+                    <!-- Approve Button (muncul setelah verified) -->
+                    <div id="approveBtnSection2" class="mb-3">
+                        <button onclick="showConfirmation('approved')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <i class="fas fa-thumbs-up"></i>
+                            👍 Disetujui
+                        </button>
+                        <p class="text-xs text-gray-600 mt-1">Pengajuan disetujui dan siap diimplementasikan</p>
                     </div>
                 </div>
 
