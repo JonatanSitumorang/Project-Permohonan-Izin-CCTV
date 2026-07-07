@@ -338,15 +338,27 @@
         // Load password dari server saat page load
         async function loadPasswordFromServer() {
             try {
+                console.log('Fetching password from /api/riwayat-password...');
                 const response = await fetch('/api/riwayat-password');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                
                 if (data.password) {
                     CORRECT_PASSWORD = data.password;
-                    console.log('✅ Password loaded from server');
+                    console.log('✅ Password loaded from server successfully');
+                    return true;
+                } else {
+                    console.warn('⚠️  No password in response, using default');
+                    return false;
                 }
             } catch (error) {
-                console.error('Error loading password from server:', error);
-                // Tetap pakai default admin123 kalau error
+                console.error('❌ Error loading password from server:', error);
+                console.warn('⚠️  Using default password admin123');
+                return false;
             }
         }
         
@@ -917,12 +929,20 @@
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('Page loaded, loading password from server...');
                 loadPasswordFromServer().then(() => {
+                    console.log('Password loaded, checking protection...');
+                    checkPasswordProtection();
+                }).catch(err => {
+                    console.error('Error loading password, using default:', err);
                     checkPasswordProtection();
                 });
             });
         } else {
             console.log('Page already loaded, loading password from server...');
             loadPasswordFromServer().then(() => {
+                console.log('Password loaded, checking protection...');
+                checkPasswordProtection();
+            }).catch(err => {
+                console.error('Error loading password, using default:', err);
                 checkPasswordProtection();
             });
         }
