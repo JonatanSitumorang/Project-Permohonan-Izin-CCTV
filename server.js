@@ -90,6 +90,15 @@ const submissionSchema = new mongoose.Schema({
 
 const Submission = mongoose.model('Submission', submissionSchema);
 
+// Password Schema - simpan password untuk akses riwayat
+const passwordSchema = new mongoose.Schema({
+    key: { type: String, default: 'riwayatPassword', unique: true },
+    password: { type: String, required: true },
+    updatedAt: { type: Date, default: Date.now }
+});
+
+const Password = mongoose.model('Password', passwordSchema);
+
 // Routes
 
 // GET all submissions
@@ -223,6 +232,61 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// GET riwayat password
+app.get('/api/riwayat-password', async (_req, res) => {
+    try {
+        let passwordDoc = await Password.findOne({ key: 'riwayatPassword' });
+        
+        // Jika belum ada, buat dengan default password
+        if (!passwordDoc) {
+            passwordDoc = new Password({
+                key: 'riwayatPassword',
+                password: 'admin123'
+            });
+            await passwordDoc.save();
+        }
+        
+        res.json({ password: passwordDoc.password });
+    } catch (error) {
+        console.error('Error fetching password:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// UPDATE riwayat password
+app.post('/api/riwayat-password', async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ success: false, error: 'Password minimal 6 karakter' });
+        }
+        
+        let passwordDoc = await Password.findOne({ key: 'riwayatPassword' });
+        
+        if (!passwordDoc) {
+            passwordDoc = new Password({
+                key: 'riwayatPassword',
+                password: newPassword
+            });
+        } else {
+            // Verify old password
+            if (oldPassword !== passwordDoc.password) {
+                return res.status(401).json({ success: false, error: 'Password lama salah' });
+            }
+            passwordDoc.password = newPassword;
+        }
+        
+        passwordDoc.updatedAt = Date.now();
+        await passwordDoc.save();
+        
+        res.json({ success: true, message: 'Password berhasil diubah' });
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Explicit routes for HTML files (must come BEFORE static middleware behavior)
 app.get('/index.html', (_req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -253,5 +317,7 @@ app.listen(PORT, () => {
     console.log('  POST /api/submissions - Create new submission');
     console.log('  PUT  /api/submissions/:id - Update submission');
     console.log('  DELETE /api/submissions/:id - Delete submission');
-    console.log('  GET  /api/stats - Get statistics\n');
+    console.log('  GET  /api/stats - Get statistics');
+    console.log('  GET  /api/riwayat-password - Get riwayat password');
+    console.log('  POST /api/riwayat-password - Update riwayat password\n');
 });

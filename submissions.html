@@ -42,6 +42,31 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <!-- Password Protection Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-6">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lock text-blue-600 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Akses Riwayat</h2>
+                <p class="text-gray-600">Masukkan password untuk melihat riwayat pengajuan</p>
+            </div>
+            
+            <div class="mb-6">
+                <input type="password" id="passwordInput" placeholder="Masukkan password" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    onkeypress="if(event.key==='Enter') verifyPassword()">
+                <p id="passwordError" class="text-red-600 text-sm mt-2 hidden">Password salah. Silakan coba lagi.</p>
+            </div>
+            
+            <button onclick="verifyPassword()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                <i class="fas fa-check"></i>
+                Masuk
+            </button>
+        </div>
+    </div>
+
     <div class="container mx-auto px-3 md:px-4 py-6 md:py-8">
         <!-- Navigation -->
         <nav class="bg-white shadow-sm -mx-3 md:-mx-4 -mt-6 md:-mt-8 mb-8 px-3 md:px-4 py-3 md:py-4 sticky top-0 z-50">
@@ -100,10 +125,16 @@
                     </div>
                     <h1 class="text-3xl font-bold text-gray-900">Riwayat Pengajuan</h1>
                 </div>
-                <a href="index.html" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-                    <i class="fas fa-plus"></i>
-                    Pengajuan Baru
-                </a>
+                <div class="flex gap-2">
+                    <button onclick="openChangePasswordModal()" class="flex items-center gap-2 bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 transition text-sm">
+                        <i class="fas fa-key"></i>
+                        Ubah Password
+                    </button>
+                    <a href="index.html" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-plus"></i>
+                        Pengajuan Baru
+                    </a>
+                </div>
             </div>
             <p class="text-gray-600">Kelola dan pantau semua pengajuan izin CCTV Anda</p>
         </div>
@@ -300,6 +331,157 @@
 
     <script>
         let allSubmissions = [];
+
+        // Password protection - Load dari server
+        let CORRECT_PASSWORD = 'admin123'; // Default, akan di-override dari server
+        
+        // Load password dari server saat page load
+        async function loadPasswordFromServer() {
+            try {
+                const response = await fetch('/api/riwayat-password');
+                const data = await response.json();
+                if (data.password) {
+                    CORRECT_PASSWORD = data.password;
+                    console.log('✅ Password loaded from server');
+                }
+            } catch (error) {
+                console.error('Error loading password from server:', error);
+                // Tetap pakai default admin123 kalau error
+            }
+        }
+        
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('passwordError');
+            
+            if (password === CORRECT_PASSWORD) {
+                // Simpan ke sessionStorage HANYA untuk session ini saja
+                sessionStorage.setItem('riwayatAccessGranted', 'true');
+                sessionStorage.setItem('currentPassword', CORRECT_PASSWORD);
+                document.getElementById('passwordModal').classList.add('hidden');
+                loadSubmissions();
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('passwordInput').value = '';
+                setTimeout(() => {
+                    errorMsg.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function checkPasswordProtection() {
+            // Check apakah sudah login di session ini
+            const isLoggedIn = sessionStorage.getItem('riwayatAccessGranted') === 'true';
+            
+            if (!isLoggedIn) {
+                // Belum login, tampilkan modal password
+                document.getElementById('passwordModal').classList.remove('hidden');
+            } else {
+                // Sudah login, langsung load
+                document.getElementById('passwordModal').classList.add('hidden');
+                loadSubmissions();
+            }
+        }
+
+        // Change password functions
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+            // Clear form
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            // Hide errors
+            document.getElementById('oldPasswordError').classList.add('hidden');
+            document.getElementById('newPasswordError').classList.add('hidden');
+            document.getElementById('confirmPasswordError').classList.add('hidden');
+            document.getElementById('changePasswordSuccess').classList.add('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+        }
+
+        function saveNewPassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const oldPasswordError = document.getElementById('oldPasswordError');
+            const newPasswordError = document.getElementById('newPasswordError');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            const successMsg = document.getElementById('changePasswordSuccess');
+            
+            // Hide all errors
+            oldPasswordError.classList.add('hidden');
+            newPasswordError.classList.add('hidden');
+            confirmPasswordError.classList.add('hidden');
+            successMsg.classList.add('hidden');
+            
+            let hasError = false;
+            
+            // Validasi password lama - gunakan CORRECT_PASSWORD (yang current)
+            if (oldPassword !== CORRECT_PASSWORD) {
+                oldPasswordError.classList.remove('hidden');
+                hasError = true;
+            }
+            
+            // Validasi password baru minimal 6 karakter
+            if (newPassword.length < 6) {
+                newPasswordError.classList.remove('hidden');
+                hasError = true;
+            }
+            
+            // Validasi password cocok
+            if (newPassword !== confirmPassword) {
+                confirmPasswordError.classList.remove('hidden');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Send ke server untuk update password
+            fetch('/api/riwayat-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Update global CORRECT_PASSWORD dengan password baru
+                    CORRECT_PASSWORD = newPassword;
+                    
+                    // Update session password
+                    sessionStorage.setItem('currentPassword', newPassword);
+                    
+                    // Show success message
+                    successMsg.classList.remove('hidden');
+                    
+                    // Clear form
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    
+                    // Close modal setelah 2 detik
+                    setTimeout(() => {
+                        closeChangePasswordModal();
+                    }, 2000);
+                } else {
+                    oldPasswordError.classList.remove('hidden');
+                    oldPasswordError.textContent = result.error || 'Gagal mengubah password';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                oldPasswordError.classList.remove('hidden');
+                oldPasswordError.textContent = 'Gagal menghubungi server';
+            });
+        }
 
         function loadSubmissions() {
             // Load from API with retry logic
@@ -733,13 +915,30 @@
         // Load submissions on page load
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                console.log('Page loaded, loading submissions...');
-                loadSubmissions();
+                console.log('Page loaded, loading password from server...');
+                loadPasswordFromServer().then(() => {
+                    checkPasswordProtection();
+                });
             });
         } else {
-            console.log('Page already loaded, loading submissions...');
-            loadSubmissions();
+            console.log('Page already loaded, loading password from server...');
+            loadPasswordFromServer().then(() => {
+                checkPasswordProtection();
+            });
         }
+
+        // Clear password session saat navigasi keluar dari riwayat
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // Jika navigasi ke halaman lain (bukan submissions.html), clear session
+                if (href && !href.includes('submissions.html')) {
+                    sessionStorage.removeItem('riwayatAccessGranted');
+                    sessionStorage.removeItem('currentPassword');
+                    console.log('Cleared password session - navigating away from riwayat');
+                }
+            });
+        });
     </script>
     <div id="confirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
@@ -855,6 +1054,57 @@
             </div>
 
             <input type="hidden" id="verifySubmissionId" value="">
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-6">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-key text-blue-600 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Ubah Password</h2>
+                <p class="text-gray-600 text-sm">Masukkan password lama dan password baru</p>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password Lama</label>
+                    <input type="password" id="oldPassword" placeholder="Masukkan password lama" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <p id="oldPasswordError" class="text-red-600 text-xs mt-1 hidden">Password lama salah</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password Baru</label>
+                    <input type="password" id="newPassword" placeholder="Masukkan password baru" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <p id="newPasswordError" class="text-red-600 text-xs mt-1 hidden">Password minimal 6 karakter</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                    <input type="password" id="confirmPassword" placeholder="Konfirmasi password baru" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <p id="confirmPasswordError" class="text-red-600 text-xs mt-1 hidden">Password tidak cocok</p>
+                </div>
+
+                <p id="changePasswordSuccess" class="text-green-600 text-sm hidden flex items-center gap-2">
+                    <i class="fas fa-check-circle"></i>
+                    Password berhasil diubah!
+                </p>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="closeChangePasswordModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg transition">
+                    Batal
+                </button>
+                <button onclick="saveNewPassword()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i>
+                    Simpan
+                </button>
+            </div>
         </div>
     </div>
 
