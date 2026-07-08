@@ -42,9 +42,7 @@ if (MONGODB_URI && !mongoose.connection.readyState) {
         minPoolSize: 1,
         retryWrites: true,
         w: 'majority',
-        family: 4, // Force IPv4
-        keepAlive: true,
-        keepAliveInitialDelayMS: 30000 // Keep connection alive every 30s
+        family: 4 // Force IPv4
     })
     .then(() => {
         console.log('✅ MongoDB Connected successfully');
@@ -321,6 +319,10 @@ app.post('/api/riwayat-password', async (req, res) => {
 });
 
 // Explicit routes for HTML files (must come BEFORE static middleware behavior)
+app.get('/', (_req, res) => {
+    res.sendFile(__dirname + '/landing.html');
+});
+
 app.get('/index.html', (_req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
