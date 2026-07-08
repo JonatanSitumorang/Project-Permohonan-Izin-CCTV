@@ -42,7 +42,9 @@ if (MONGODB_URI && !mongoose.connection.readyState) {
         minPoolSize: 1,
         retryWrites: true,
         w: 'majority',
-        family: 4 // Force IPv4 for better compatibility
+        family: 4, // Force IPv4
+        keepAlive: true,
+        keepAliveInitialDelayMS: 30000 // Keep connection alive every 30s
     })
     .then(() => {
         console.log('✅ MongoDB Connected successfully');
@@ -253,6 +255,37 @@ app.get('/api/riwayat-password', async (_req, res) => {
     }
 });
 
+// Health check endpoint
+app.get('/api/health', async (_req, res) => {
+    try {
+        // Check database connection
+        const isConnected = mongoose.connection.readyState === 1;
+        
+        if (!isConnected) {
+            return res.status(503).json({ 
+                status: 'unhealthy', 
+                database: 'disconnected',
+                message: 'Attempting to reconnect...'
+            });
+        }
+        
+        // Try a simple query
+        const count = await Submission.countDocuments({});
+        
+        res.json({ 
+            status: 'healthy', 
+            database: 'connected',
+            submissions: count
+        });
+    } catch (error) {
+        console.error('Health check error:', error);
+        res.status(503).json({ 
+            status: 'unhealthy', 
+            error: error.message 
+        });
+    }
+});
+
 // UPDATE riwayat password
 app.post('/api/riwayat-password', async (req, res) => {
     try {
@@ -319,5 +352,6 @@ app.listen(PORT, () => {
     console.log('  DELETE /api/submissions/:id - Delete submission');
     console.log('  GET  /api/stats - Get statistics');
     console.log('  GET  /api/riwayat-password - Get riwayat password');
-    console.log('  POST /api/riwayat-password - Update riwayat password\n');
+    console.log('  POST /api/riwayat-password - Update riwayat password');
+    console.log('  GET  /api/health - Health check\n');
 });
