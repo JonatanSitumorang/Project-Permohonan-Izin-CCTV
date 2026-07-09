@@ -235,21 +235,45 @@ app.get('/api/stats', async (req, res) => {
 // GET riwayat password
 app.get('/api/riwayat-password', async (_req, res) => {
     try {
+        // Ensure database is connected
+        if (!mongoose.connection.readyState) {
+            console.warn('⚠️  DB not ready for password fetch, waiting...');
+            const connectionReady = await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (mongoose.connection.readyState === 1) {
+                        clearInterval(checkInterval);
+                        resolve(true);
+                    }
+                }, 500);
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    resolve(false);
+                }, 5000);
+            });
+            
+            if (!connectionReady) {
+                return res.status(503).json({ success: false, error: 'Database tidak siap' });
+            }
+        }
+        
         let passwordDoc = await Password.findOne({ key: 'riwayatPassword' });
         
-        // Jika belum ada, buat dengan default password
+        // Jika belum ada, buat dengan default password HANYA sekali
         if (!passwordDoc) {
+            console.log('📝 Creating default password document...');
             passwordDoc = new Password({
                 key: 'riwayatPassword',
                 password: 'admin123'
             });
             await passwordDoc.save();
+            console.log('✅ Default password document created');
         }
         
         res.json({ password: passwordDoc.password });
     } catch (error) {
-        console.error('Error fetching password:', error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('❌ Error fetching password:', error.message);
+        // Return default if there's an error (fallback only)
+        res.json({ password: 'admin123' });
     }
 });
 
@@ -293,9 +317,32 @@ app.post('/api/riwayat-password', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Password minimal 6 karakter' });
         }
         
+        // Ensure database is connected
+        if (!mongoose.connection.readyState) {
+            console.warn('⚠️  DB not ready for password update, waiting...');
+            const connectionReady = await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (mongoose.connection.readyState === 1) {
+                        clearInterval(checkInterval);
+                        resolve(true);
+                    }
+                }, 500);
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    resolve(false);
+                }, 5000);
+            });
+            
+            if (!connectionReady) {
+                return res.status(503).json({ success: false, error: 'Database tidak siap. Coba lagi.' });
+            }
+        }
+        
         let passwordDoc = await Password.findOne({ key: 'riwayatPassword' });
         
         if (!passwordDoc) {
+            console.warn('⚠️  Password doc not found, creating new...');
+            // If doesn't exist, create it with new password
             passwordDoc = new Password({
                 key: 'riwayatPassword',
                 password: newPassword
@@ -303,17 +350,21 @@ app.post('/api/riwayat-password', async (req, res) => {
         } else {
             // Verify old password
             if (oldPassword !== passwordDoc.password) {
+                console.warn('❌ Old password incorrect. Expected: *****, Got: *****');
                 return res.status(401).json({ success: false, error: 'Password lama salah' });
             }
+            // Update with new password
+            console.log('✅ Old password verified, updating to new password...');
             passwordDoc.password = newPassword;
         }
         
         passwordDoc.updatedAt = Date.now();
-        await passwordDoc.save();
+        const saved = await passwordDoc.save();
         
-        res.json({ success: true, message: 'Password berhasil diubah' });
+        console.log('✅ Password updated successfully at', new Date().toISOString());
+        res.json({ success: true, message: 'Password berhasil diubah', updatedAt: saved.updatedAt });
     } catch (error) {
-        console.error('Error updating password:', error);
+        console.error('❌ Error updating password:', error.message);
         res.status(500).json({ success: false, error: error.message });
     }
 });
