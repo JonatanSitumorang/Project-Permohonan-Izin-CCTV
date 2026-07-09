@@ -337,29 +337,49 @@
         
         // Load password dari server saat page load
         async function loadPasswordFromServer() {
-            try {
-                console.log('Fetching password from /api/riwayat-password...');
-                const response = await fetch('/api/riwayat-password');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            const maxRetries = 3;
+            let retryCount = 0;
+            
+            async function fetchWithRetry() {
+                try {
+                    console.log(`🔐 Fetching password from server (attempt ${retryCount + 1}/${maxRetries})...`);
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                    
+                    const response = await fetch('/api/riwayat-password', { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.password) {
+                        CORRECT_PASSWORD = data.password;
+                        console.log('✅ Password loaded from server successfully');
+                        return true;
+                    } else {
+                        throw new Error('No password in response');
+                    }
+                } catch (error) {
+                    console.error(`❌ Error loading password (attempt ${retryCount + 1}):`, error.message);
+                    retryCount++;
+                    
+                    if (retryCount < maxRetries) {
+                        const delay = 1000 * retryCount;
+                        console.log(`⏳ Retrying in ${delay/1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithRetry();
+                    } else {
+                        console.warn('⚠️  Using default password (admin123) - server unreachable');
+                        return false;
+                    }
                 }
-                
-                const data = await response.json();
-                
-                if (data.password) {
-                    CORRECT_PASSWORD = data.password;
-                    console.log('✅ Password loaded from server successfully');
-                    return true;
-                } else {
-                    console.warn('⚠️  No password in response, using default');
-                    return false;
-                }
-            } catch (error) {
-                console.error('❌ Error loading password from server:', error);
-                console.warn('⚠️  Using default password admin123');
-                return false;
             }
+            
+            return fetchWithRetry();
         }
         
         function verifyPassword() {
@@ -501,27 +521,46 @@
         }
 
         function loadSubmissions() {
-            // Load from API with retry logic
-            const maxRetries = 3;
+            // Load from API with enhanced retry logic for cold start
+            const maxRetries = 5;
             let retryCount = 0;
             
             function fetchWithRetry() {
-                fetch('/api/submissions')
-                    .then(response => response.json())
+                // Add timeout to fetch
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                
+                fetch('/api/submissions', { signal: controller.signal })
+                    .then(response => {
+                        clearTimeout(timeoutId);
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        if (!Array.isArray(data)) {
+                            data = [];
+                        }
                         allSubmissions = data.sort((a, b) => (b.timestampMs || b.id || 0) - (a.timestampMs || a.id || 0));
                         renderSubmissions();
                         updateStatistics();
+                        console.log('✅ Submissions loaded successfully');
                     })
                     .catch(error => {
+                        clearTimeout(timeoutId);
                         retryCount++;
-                        console.error(`Error loading submissions (attempt ${retryCount}/${maxRetries}):`, error);
+                        const delayTime = Math.min(2000 * retryCount, 8000); // Exponential backoff: 2s, 4s, 6s, 8s, 8s
+                        
+                        console.error(`❌ Error loading submissions (attempt ${retryCount}/${maxRetries}):`, error.message);
                         
                         if (retryCount < maxRetries) {
-                            console.log(`Retrying in 2 seconds...`);
-                            setTimeout(fetchWithRetry, 2000);
+                            console.log(`⏳ Retrying in ${delayTime/1000} seconds (attempt ${retryCount+1}/${maxRetries})...`);
+                            setTimeout(fetchWithRetry, delayTime);
                         } else {
-                            alert('Gagal memuat data setelah 3 kali percobaan. Silakan refresh halaman.');
+                            console.error('❌ All retry attempts failed');
+                            renderSubmissions(); // Show empty state
+                            alert('⚠️ Database sedang tidak siap. Silakan:\n1. Tunggu 30 detik\n2. Refresh halaman');
                         }
                     });
             }
