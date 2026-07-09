@@ -384,12 +384,17 @@
         function checkPasswordProtection() {
             // Check apakah sudah login di session ini
             const isLoggedIn = sessionStorage.getItem('riwayatAccessGranted') === 'true';
+            const storedPassword = sessionStorage.getItem('currentPassword');
             
-            if (!isLoggedIn) {
-                // Belum login, tampilkan modal password
+            if (!isLoggedIn || storedPassword !== CORRECT_PASSWORD) {
+                // Belum login atau password di-storage tidak sesuai dengan server password (berarti berubah)
+                // Clear session dan tampilkan modal password baru
+                sessionStorage.removeItem('riwayatAccessGranted');
+                sessionStorage.removeItem('currentPassword');
                 document.getElementById('passwordModal').classList.remove('hidden');
+                console.log('⚠️  Password mismatch detected - requiring new password entry');
             } else {
-                // Sudah login, langsung load
+                // Sudah login dan password cocok, langsung load
                 document.getElementById('passwordModal').classList.add('hidden');
                 loadSubmissions();
             }
